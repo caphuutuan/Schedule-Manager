@@ -1,0 +1,91 @@
+🧠 1. Nhóm cơ bản (CRUD)
+📌 Tạo lịch học
+ Tạo schedule hợp lệ
+ Thiếu field (Subject, Time…)
+ Time format sai
+ Teacher/Class không tồn tại
+📌 Lấy dữ liệu
+ Lấy tất cả schedule
+ Lấy theo ID hợp lệ
+ ID không tồn tại
+📌 Update
+ Update thành công
+ Update ID không tồn tại
+ Update gây conflict (trùng giờ)
+📌 Delete
+ Xóa thành công
+ Xóa ID không tồn tại
+⚠️ 2. Nhóm conflict (QUAN TRỌNG NHẤT)
+
+👉 Đây là phần hệ thống thật bắt buộc phải xử lý
+
+🏫 1. Trùng lịch lớp
+ 1 lớp có 2 môn cùng giờ ❌
+Class A:
+08:00 - 09:00 Math
+08:30 - 09:30 Physics → ❌
+👨‍🏫 2. Trùng lịch giáo viên
+ 1 giáo viên dạy 2 lớp cùng giờ ❌
+⏱️ 3. Overlap time
+ 08:00–09:00 vs 09:00–10:00 → ✅ OK
+ 08:00–09:00 vs 08:59–10:00 → ❌
+📅 4. Sai logic thời gian
+ StartTime > EndTime ❌
+ Thời gian âm ❌
+🔍 3. Nhóm filter (API chính của bạn)
+🎯 Theo Class
+ Lấy đúng schedule của class
+ Class không có dữ liệu
+🎯 Theo Teacher
+ Lấy đúng schedule giáo viên
+ Teacher không có lịch
+🎯 Theo Department
+ Lấy tất cả schedule của tổ
+ Tổ không có giáo viên
+ Giáo viên có nhưng không có lịch
+📅 Theo thời gian
+Theo ngày:
+ Có dữ liệu
+ Không có dữ liệu
+Theo khoảng:
+ fromDate → toDate hợp lệ
+ fromDate > toDate ❌
+🏫 4. Multi-school (rất quan trọng)
+📌 Test isolation dữ liệu
+ School A không thấy dữ liệu School B
+ Query sai schoolId → trả rỗng
+🔐 5. Auth / Không auth
+Nếu có login:
+ User chỉ thấy school của mình
+Nếu không login:
+ schoolId truyền qua query
+ thiếu schoolId → lỗi
+🧪 6. Nhóm edge cases (dev hay quên)
+ Subject = null
+ Tên quá dài
+ Ký tự đặc biệt
+ Teacher bị xóa nhưng schedule vẫn còn
+ Class bị xóa nhưng schedule vẫn còn
+⚡ 7. Nhóm hiệu năng (nâng cao)
+ Nhiều schedule (1000+)
+ Filter vẫn nhanh
+ Query không bị timeout
+🧹 8. Nhóm dữ liệu thực tế
+📌 Case 1:
+1 giáo viên dạy nhiều lớp khác nhau
+📌 Case 2:
+1 lớp học nhiều môn trong ngày
+📌 Case 3:
+1 tổ có nhiều giáo viên, mỗi người lịch khác nhau
+🧩 9. Nhóm UI-driven (liên quan React sau này)
+
+👉 Test theo đúng cách UI sẽ gọi API:
+
+ Tab Class → gọi API đúng
+ Tab Teacher → đúng data
+ Tab Department → đúng logic
+🔥 10. Test “phá hệ thống” (rất nên thử)
+ Gửi request thiếu field
+ Gửi sai kiểu dữ liệu
+ Gửi JSON rỗng
+ Gửi ID âm
