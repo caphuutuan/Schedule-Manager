@@ -13,6 +13,7 @@ public class Schedule
     /// Stores the recurring day so schedules can repeat weekly.
     /// </summary>
     public int DayOfWeek { get; set; }
+    public DateTime? Date { get; set; }
 
     /// <summary>
     /// Represents the specific class period (e.g. 1, 2, 3...)

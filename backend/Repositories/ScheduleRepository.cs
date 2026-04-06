@@ -40,39 +40,55 @@ public class ScheduleRepository : GenericRepository<Schedule>, IScheduleReposito
             }
         }
 
-        // 3. Date filtering (mapping literal dates to recurring DayOfWeek)
+        // 3. Date filtering (Check for specific date OR recurring day)
         if (filter.Date.HasValue)
         {
             int dow = GetMappingDayOfWeek(filter.Date.Value);
-            query = query.Where(s => s.DayOfWeek == dow);
+            var targetDate = filter.Date.Value.Date;
+            query = query.Where(s => 
+                (s.Date.HasValue && s.Date.Value.Date == targetDate) || 
+                (!s.Date.HasValue && s.DayOfWeek == dow)
+            );
         }
         else if (filter.FromDate.HasValue && filter.ToDate.HasValue)
         {
-            DateTime start = filter.FromDate.Value;
-            DateTime end = filter.ToDate.Value;
+            DateTime start = filter.FromDate.Value.Date;
+            DateTime end = filter.ToDate.Value.Date;
             
-            TimeSpan diff = end - start;
-            if (diff.TotalDays >= 0 && diff.TotalDays < 7)
+            var allowedDows = new List<int>();
+            for(var date = start; date <= end; date = date.AddDays(1))
             {
-                 var allowedDows = new List<int>();
-                 for(var date = start; date <= end; date = date.AddDays(1))
-                 {
-                     allowedDows.Add(GetMappingDayOfWeek(date));
-                 }
-                 query = query.Where(s => allowedDows.Contains(s.DayOfWeek));
+                allowedDows.Add(GetMappingDayOfWeek(date));
             }
+
+            query = query.Where(s => 
+                (s.Date.HasValue && s.Date.Value.Date >= start && s.Date.Value.Date <= end) ||
+                (!s.Date.HasValue && allowedDows.Contains(s.DayOfWeek))
+            );
         }
 
         return await query.ToListAsync();
     }
 
-    public async Task<bool> HasConflictAsync(int exceptionScheduleId, int teacherId, int classId, int dayOfWeek, int period)
+    public async Task<bool> HasConflictAsync(int exceptionScheduleId, int teacherId, int classId, int dayOfWeek, int period, DateTime? date = null)
     {
+        // Check for conflicts:
+        // 1. Same Teacher or Class
+        // 2. Same Period
+        // 3. Either:
+        //    a. Both are the same specific Date
+        //    b. Both are recurring on the same DayOfWeek
+        //    c. One is recurring and the other is a specific Date that falls on that DayOfWeek
+        
         return await dbSet.AnyAsync(s => 
             s.Id != exceptionScheduleId && 
-            s.DayOfWeek == dayOfWeek &&
             s.Period == period &&
-            (s.TeacherId == teacherId || s.ClassId == classId)
+            (s.TeacherId == teacherId || s.ClassId == classId) &&
+            (
+                (s.Date == date) || // Both same date (or both null)
+                (s.DayOfWeek == dayOfWeek && (!s.Date.HasValue || !date.HasValue)) || // Recurring vs Recurring or Recurring vs Date
+                (s.Date.HasValue && date.HasValue && s.Date.Value.Date == date.Value.Date) // Specific Date vs Specific Date
+            )
         );
     }
 

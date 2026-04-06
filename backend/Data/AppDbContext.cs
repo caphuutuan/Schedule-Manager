@@ -142,18 +142,24 @@ public class AppDbContext : DbContext
             new Subject { Id = 6, Name = "Địa Lý", DepartmentId = 2, SchoolId = 1 }
         );
 
-        // Schedules — DayOfWeek: 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri
+        // Schedules — Using specific dates for Week 1 (Jan 2026) to demonstrate weekly filtering
+        var w1Mon = new DateTime(2026, 1, 5);
+        var w1Tue = new DateTime(2026, 1, 6);
+        var w1Wed = new DateTime(2026, 1, 7);
+        var w1Thu = new DateTime(2026, 1, 8);
+        var w1Fri = new DateTime(2026, 1, 9);
+
         modelBuilder.Entity<Schedule>().HasData(
-            new Schedule { Id = 1,  SchoolId = 1, ClassId = 1, TeacherId = 1, SubjectId = 1, DayOfWeek = 1, Period = 1 },
-            new Schedule { Id = 2,  SchoolId = 1, ClassId = 1, TeacherId = 2, SubjectId = 2, DayOfWeek = 1, Period = 2 },
-            new Schedule { Id = 3,  SchoolId = 1, ClassId = 2, TeacherId = 3, SubjectId = 3, DayOfWeek = 2, Period = 1 },
-            new Schedule { Id = 4,  SchoolId = 1, ClassId = 2, TeacherId = 4, SubjectId = 4, DayOfWeek = 2, Period = 2 },
-            new Schedule { Id = 5,  SchoolId = 1, ClassId = 3, TeacherId = 5, SubjectId = 5, DayOfWeek = 3, Period = 1 },
-            new Schedule { Id = 6,  SchoolId = 1, ClassId = 1, TeacherId = 1, SubjectId = 1, DayOfWeek = 3, Period = 2 },
-            new Schedule { Id = 7,  SchoolId = 1, ClassId = 2, TeacherId = 2, SubjectId = 2, DayOfWeek = 4, Period = 1 },
-            new Schedule { Id = 8,  SchoolId = 1, ClassId = 3, TeacherId = 3, SubjectId = 3, DayOfWeek = 4, Period = 2 },
-            new Schedule { Id = 9,  SchoolId = 1, ClassId = 1, TeacherId = 4, SubjectId = 4, DayOfWeek = 5, Period = 1 },
-            new Schedule { Id = 10, SchoolId = 1, ClassId = 2, TeacherId = 5, SubjectId = 6, DayOfWeek = 5, Period = 2 }
+            new Schedule { Id = 1,  SchoolId = 1, ClassId = 1, TeacherId = 1, SubjectId = 1, DayOfWeek = 1, Period = 1, Date = w1Mon },
+            new Schedule { Id = 2,  SchoolId = 1, ClassId = 1, TeacherId = 2, SubjectId = 2, DayOfWeek = 1, Period = 2, Date = w1Mon },
+            new Schedule { Id = 3,  SchoolId = 1, ClassId = 2, TeacherId = 3, SubjectId = 3, DayOfWeek = 2, Period = 1, Date = w1Tue },
+            new Schedule { Id = 4,  SchoolId = 1, ClassId = 2, TeacherId = 4, SubjectId = 4, DayOfWeek = 2, Period = 2, Date = w1Tue },
+            new Schedule { Id = 5,  SchoolId = 1, ClassId = 3, TeacherId = 5, SubjectId = 5, DayOfWeek = 3, Period = 1, Date = w1Wed },
+            new Schedule { Id = 6,  SchoolId = 1, ClassId = 1, TeacherId = 1, SubjectId = 1, DayOfWeek = 3, Period = 2, Date = w1Wed },
+            new Schedule { Id = 7,  SchoolId = 1, ClassId = 2, TeacherId = 2, SubjectId = 2, DayOfWeek = 4, Period = 1, Date = w1Thu },
+            new Schedule { Id = 8,  SchoolId = 1, ClassId = 3, TeacherId = 3, SubjectId = 3, DayOfWeek = 4, Period = 2, Date = w1Thu },
+            new Schedule { Id = 9,  SchoolId = 1, ClassId = 1, TeacherId = 4, SubjectId = 4, DayOfWeek = 5, Period = 1, Date = w1Fri },
+            new Schedule { Id = 10, SchoolId = 1, ClassId = 2, TeacherId = 5, SubjectId = 6, DayOfWeek = 5, Period = 2, Date = w1Fri }
         );
     }
 }

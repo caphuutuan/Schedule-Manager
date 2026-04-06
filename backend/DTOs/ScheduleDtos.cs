@@ -18,6 +18,7 @@ public class ScheduleResponseDto
     public string SubjectName { get; set; } = string.Empty;
     public int DayOfWeek { get; set; }
     public int Period { get; set; }
+    public DateTime? Date { get; set; }
 }
 
 // ─── Create DTO ──────────────────────────────────────────────────────────────
@@ -35,6 +36,8 @@ public class ScheduleCreateDto
 
     /// <summary>The specific class period (e.g., 1, 2, 3)</summary>
     public int Period { get; set; }
+
+    public DateTime? Date { get; set; }
 }
 
 // ─── Update DTO ──────────────────────────────────────────────────────────────
@@ -47,6 +50,7 @@ public class ScheduleUpdateDto
     public int SubjectId { get; set; }
     public int DayOfWeek { get; set; }
     public int Period { get; set; }
+    public DateTime? Date { get; set; }
 }
 
 // ─── Filter DTO ──────────────────────────────────────────────────────────────

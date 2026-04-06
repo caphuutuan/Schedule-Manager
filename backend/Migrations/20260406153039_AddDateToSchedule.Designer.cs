@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ScheduleManager.Data;
 
@@ -11,9 +12,11 @@ using ScheduleManager.Data;
 namespace ScheduleManager.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260406153039_AddDateToSchedule")]
+    partial class AddDateToSchedule
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -154,7 +157,6 @@ namespace ScheduleManager.Migrations
                         {
                             Id = 1,
                             ClassId = 1,
-                            Date = new DateTime(2026, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DayOfWeek = 1,
                             Period = 1,
                             SchoolId = 1,
@@ -165,7 +167,6 @@ namespace ScheduleManager.Migrations
                         {
                             Id = 2,
                             ClassId = 1,
-                            Date = new DateTime(2026, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DayOfWeek = 1,
                             Period = 2,
                             SchoolId = 1,
@@ -176,7 +177,6 @@ namespace ScheduleManager.Migrations
                         {
                             Id = 3,
                             ClassId = 2,
-                            Date = new DateTime(2026, 1, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DayOfWeek = 2,
                             Period = 1,
                             SchoolId = 1,
@@ -187,7 +187,6 @@ namespace ScheduleManager.Migrations
                         {
                             Id = 4,
                             ClassId = 2,
-                            Date = new DateTime(2026, 1, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DayOfWeek = 2,
                             Period = 2,
                             SchoolId = 1,
@@ -198,7 +197,6 @@ namespace ScheduleManager.Migrations
                         {
                             Id = 5,
                             ClassId = 3,
-                            Date = new DateTime(2026, 1, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DayOfWeek = 3,
                             Period = 1,
                             SchoolId = 1,
@@ -209,7 +207,6 @@ namespace ScheduleManager.Migrations
                         {
                             Id = 6,
                             ClassId = 1,
-                            Date = new DateTime(2026, 1, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DayOfWeek = 3,
                             Period = 2,
                             SchoolId = 1,
@@ -220,7 +217,6 @@ namespace ScheduleManager.Migrations
                         {
                             Id = 7,
                             ClassId = 2,
-                            Date = new DateTime(2026, 1, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DayOfWeek = 4,
                             Period = 1,
                             SchoolId = 1,
@@ -231,7 +227,6 @@ namespace ScheduleManager.Migrations
                         {
                             Id = 8,
                             ClassId = 3,
-                            Date = new DateTime(2026, 1, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DayOfWeek = 4,
                             Period = 2,
                             SchoolId = 1,
@@ -242,7 +237,6 @@ namespace ScheduleManager.Migrations
                         {
                             Id = 9,
                             ClassId = 1,
-                            Date = new DateTime(2026, 1, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DayOfWeek = 5,
                             Period = 1,
                             SchoolId = 1,
@@ -253,7 +247,6 @@ namespace ScheduleManager.Migrations
                         {
                             Id = 10,
                             ClassId = 2,
-                            Date = new DateTime(2026, 1, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DayOfWeek = 5,
                             Period = 2,
                             SchoolId = 1,

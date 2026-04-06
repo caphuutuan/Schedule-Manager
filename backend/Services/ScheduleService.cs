@@ -32,7 +32,7 @@ public class ScheduleService : IScheduleService
 
     public async Task<ScheduleResponseDto> CreateScheduleAsync(ScheduleCreateDto dto)
     {
-        bool hasConflict = await _repository.HasConflictAsync(0, dto.TeacherId, dto.ClassId, dto.DayOfWeek, dto.Period);
+        bool hasConflict = await _repository.HasConflictAsync(0, dto.TeacherId, dto.ClassId, dto.DayOfWeek, dto.Period, dto.Date);
         if (hasConflict)
         {
             throw new Exception("Lịch học bị trùng thời gian cho Lớp hoặc Giáo viên này!");
@@ -45,7 +45,8 @@ public class ScheduleService : IScheduleService
             TeacherId = dto.TeacherId,
             SubjectId = dto.SubjectId,
             DayOfWeek = dto.DayOfWeek,
-            Period = dto.Period
+            Period = dto.Period,
+            Date = dto.Date
         };
 
         await _repository.AddAsync(schedule);
@@ -59,7 +60,7 @@ public class ScheduleService : IScheduleService
         var schedule = await _repository.GetByIdAsync(id);
         if (schedule == null) throw new KeyNotFoundException("Không tìm thấy lịch học.");
 
-        bool hasConflict = await _repository.HasConflictAsync(id, dto.TeacherId, dto.ClassId, dto.DayOfWeek, dto.Period);
+        bool hasConflict = await _repository.HasConflictAsync(id, dto.TeacherId, dto.ClassId, dto.DayOfWeek, dto.Period, dto.Date);
         if (hasConflict)
         {
             throw new Exception("Lịch học bị trùng thời gian cho Lớp hoặc Giáo viên này!");
@@ -70,6 +71,7 @@ public class ScheduleService : IScheduleService
         schedule.SubjectId = dto.SubjectId;
         schedule.DayOfWeek = dto.DayOfWeek;
         schedule.Period = dto.Period;
+        schedule.Date = dto.Date;
 
         _repository.Update(schedule);
         await _repository.SaveChangesAsync();

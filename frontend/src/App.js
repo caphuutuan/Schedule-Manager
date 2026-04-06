@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import * as api from './services/api';
 
 const App = () => {
   const [selectedType, setSelectedType] = useState('class'); // class | teacher | department
   const [selectedId, setSelectedId] = useState('');
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [schedules, setSchedules] = useState([]);
   const [entities, setEntities] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -13,15 +12,31 @@ const App = () => {
 
   const schoolId = 1; // Default school ID as per requirements
 
-  // Load entities (classes/teachers/departments) when tab changes
-  useEffect(() => {
-    loadEntities();
-    setSelectedId(''); // Reset selection
-    setSchedules([]); // Clear results
-    setError(null);
-  }, [selectedType]);
+  // Generate 52 weeks for 2026 (starting from 1st Jan 2026)
+  const weeks = useMemo(() => {
+    const weekItems = [];
+    let current = new Date('2026-01-05'); // First Monday of 2026
+    for (let i = 1; i <= 52; i++) {
+      const start = new Date(current);
+      const end = new Date(current);
+      end.setDate(end.getDate() + 6);
+      
+      const label = `Tuần ${i}: ${start.toLocaleDateString('vi-VN')} - ${end.toLocaleDateString('vi-VN')}`;
+      weekItems.push({
+        id: i,
+        label,
+        fromDate: start.toISOString().split('T')[0],
+        toDate: end.toISOString().split('T')[0]
+      });
+      current.setDate(current.getDate() + 7);
+    }
+    return weekItems;
+  }, []);
 
-  const loadEntities = async () => {
+  const [selectedWeekIndex, setSelectedWeekIndex] = useState(0);
+
+  // Load entities (classes/teachers/departments) when tab changes
+  const loadEntities = React.useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -40,7 +55,14 @@ const App = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedType, schoolId]);
+
+  useEffect(() => {
+    loadEntities();
+    setSelectedId(''); // Reset selection
+    setSchedules([]); // Clear results
+    setError(null);
+  }, [loadEntities]);
 
   const handleFetchSchedule = async () => {
     if (!selectedId) {
@@ -50,20 +72,39 @@ const App = () => {
     setFetching(true);
     setError(null);
     try {
+      const week = weeks[selectedWeekIndex];
       const params = {
         schoolId,
         type: selectedType,
         id: selectedId,
-        date: selectedDate,
+        fromDate: week.fromDate,
+        toDate: week.toDate,
       };
       const data = await api.getSchedules(params);
-      setSchedules(data);
+      // Group by DayOfWeek and sort by Period
+      const sortedData = [...data].sort((a, b) => (a.dayOfWeek - b.dayOfWeek) || (a.period - b.period));
+      setSchedules(sortedData);
     } catch (err) {
       setError('Failed to fetch schedule: ' + err.message);
       setSchedules([]);
     } finally {
       setFetching(false);
     }
+  };
+
+  const getDayName = (dow) => {
+    const days = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ Nhật'];
+    return days[dow - 1] || 'Unknown';
+  };
+
+  const getFormattedDate = (s) => {
+    if (s.date) return new Date(s.date).toLocaleDateString('vi-VN');
+    
+    // Calculate date for recurring schedule based on selected week
+    const week = weeks[selectedWeekIndex];
+    const date = new Date(week.fromDate);
+    date.setDate(date.getDate() + (s.dayOfWeek - 1));
+    return date.toLocaleDateString('vi-VN');
   };
 
   return (
@@ -103,12 +144,17 @@ const App = () => {
         </div>
 
         <div>
-          <label>Date</label>
-          <input 
-            type="date" 
-            value={selectedDate} 
-            onChange={(e) => setSelectedDate(e.target.value)}
-          />
+          <label>Week</label>
+          <select
+            value={selectedWeekIndex}
+            onChange={(e) => setSelectedWeekIndex(parseInt(e.target.value))}
+          >
+            {weeks.map((w, index) => (
+              <option key={w.id} value={index}>
+                {w.label}
+              </option>
+            ))}
+          </select>
         </div>
 
         <button 
@@ -126,21 +172,31 @@ const App = () => {
         {fetching ? (
           <div className="no-data">Fetching results...</div>
         ) : schedules.length > 0 ? (
-          schedules.map((s) => (
-            <div key={s.id} className="schedule-item">
-              <div className="period-badge">Period {s.period}</div>
-              <div className="subject-info">
-                <h3>{s.subjectName}</h3>
-                <p>Class: {s.className}</p>
-              </div>
-              <div className="teacher-tag">
-                {s.teacherName}
-              </div>
-            </div>
-          ))
+          schedules.map((s, index) => {
+            const showHeader = index === 0 || s.dayOfWeek !== schedules[index - 1].dayOfWeek;
+            return (
+              <React.Fragment key={s.id}>
+                {showHeader && (
+                  <div className="day-header">
+                    {getDayName(s.dayOfWeek)} — {getFormattedDate(s)}
+                  </div>
+                )}
+                <div className="schedule-item">
+                  <div className="period-badge">Period {s.period}</div>
+                  <div className="subject-info">
+                    <h3>{s.subjectName}</h3>
+                    <p>Class: {s.className}</p>
+                  </div>
+                  <div className="teacher-tag">
+                    {s.teacherName}
+                  </div>
+                </div>
+              </React.Fragment>
+            );
+          })
         ) : !fetching && !error && (
           <div className="no-data">
-            {selectedId ? 'No schedule found for this date.' : 'Select an ID and click Fetch Schedule'}
+            {selectedId ? 'No schedule found for this week.' : 'Select an item and click Fetch Schedule'}
           </div>
         )}
       </div>
