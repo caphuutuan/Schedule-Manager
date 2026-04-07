@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import * as api from './services/api';
+import ScheduleForm from './components/ScheduleForm';
+import Management from './components/Management';
 
 const App = () => {
+  const [view, setView] = useState('schedules'); // schedules | management
   const [selectedType, setSelectedType] = useState('class'); // class | teacher | department
   const [selectedId, setSelectedId] = useState('');
   const [schedules, setSchedules] = useState([]);
@@ -9,6 +12,9 @@ const App = () => {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
   const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingSchedule, setEditingSchedule] = useState(null);
+  const [successMsg, setSuccessMsg] = useState(null);
 
   const schoolId = 1; // Default school ID as per requirements
 
@@ -20,7 +26,7 @@ const App = () => {
       const start = new Date(current);
       const end = new Date(current);
       end.setDate(end.getDate() + 6);
-      
+
       const label = `Tuần ${i}: ${start.toLocaleDateString('vi-VN')} - ${end.toLocaleDateString('vi-VN')}`;
       weekItems.push({
         id: i,
@@ -37,6 +43,7 @@ const App = () => {
 
   // Load entities (classes/teachers/departments) when tab changes
   const loadEntities = React.useCallback(async () => {
+    if (view !== 'schedules') return;
     setLoading(true);
     setError(null);
     try {
@@ -55,7 +62,7 @@ const App = () => {
     } finally {
       setLoading(false);
     }
-  }, [selectedType, schoolId]);
+  }, [selectedType, schoolId, view]);
 
   useEffect(() => {
     loadEntities();
@@ -92,6 +99,34 @@ const App = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this schedule?')) return;
+    try {
+      await api.deleteSchedule(id);
+      setSuccessMsg('Schedule deleted successfully');
+      handleFetchSchedule();
+      setTimeout(() => setSuccessMsg(null), 3000);
+    } catch (err) {
+      setError('Failed to delete: ' + err.message);
+    }
+  };
+
+  const handleEdit = (schedule) => {
+    setEditingSchedule(schedule);
+    setIsModalOpen(true);
+  };
+
+  const handleAdd = () => {
+    setEditingSchedule(null);
+    setIsModalOpen(true);
+  };
+
+  const handleFormSave = () => {
+    setSuccessMsg('Schedule saved successfully');
+    handleFetchSchedule();
+    setTimeout(() => setSuccessMsg(null), 3000);
+  };
+
   const getDayName = (dow) => {
     const days = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ Nhật'];
     return days[dow - 1] || 'Unknown';
@@ -99,7 +134,7 @@ const App = () => {
 
   const getFormattedDate = (s) => {
     if (s.date) return new Date(s.date).toLocaleDateString('vi-VN');
-    
+
     // Calculate date for recurring schedule based on selected week
     const week = weeks[selectedWeekIndex];
     const date = new Date(week.fromDate);
@@ -107,9 +142,14 @@ const App = () => {
     return date.toLocaleDateString('vi-VN');
   };
 
-  return (
+  const renderSchedulesView = () => (
     <div className="container">
-      <h1>Schedule Manager</h1>
+      <div className="header-actions">
+        <h1>Schedule Manager</h1>
+        <button className="fetch-btn" onClick={handleAdd}>
+          + Add New Schedule
+        </button>
+      </div>
 
       <div className="tabs">
         {['class', 'teacher', 'department'].map((type) => (
@@ -126,8 +166,8 @@ const App = () => {
       <div className="form-group">
         <div>
           <label>Select {selectedType}</label>
-          <select 
-            value={selectedId} 
+          <select
+            value={selectedId}
             onChange={(e) => setSelectedId(e.target.value)}
             disabled={loading}
           >
@@ -157,8 +197,8 @@ const App = () => {
           </select>
         </div>
 
-        <button 
-          className="fetch-btn" 
+        <button
+          className="fetch-btn"
           onClick={handleFetchSchedule}
           disabled={fetching || loading || !selectedId}
         >
@@ -167,6 +207,7 @@ const App = () => {
       </div>
 
       {error && <div className="error-msg">{error}</div>}
+      {successMsg && <div className="success-msg">{successMsg}</div>}
 
       <div className="schedule-list">
         {fetching ? (
@@ -190,6 +231,14 @@ const App = () => {
                   <div className="teacher-tag">
                     {s.teacherName}
                   </div>
+                  <div className="item-actions">
+                    <button className="btn-icon" onClick={() => handleEdit(s)} title="Edit">
+                      ✎
+                    </button>
+                    <button className="btn-icon delete" onClick={() => handleDelete(s.id)} title="Delete">
+                      ✕
+                    </button>
+                  </div>
                 </div>
               </React.Fragment>
             );
@@ -200,6 +249,37 @@ const App = () => {
           </div>
         )}
       </div>
+
+      <ScheduleForm
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        schedule={editingSchedule}
+        onSave={handleFormSave}
+      />
+    </div>
+  );
+
+  return (
+    <div className="app-layout">
+      <nav className="main-nav">
+        <div className="nav-logo">EduSchedule</div>
+        <div className="nav-links">
+          <button
+            className={view === 'schedules' ? 'active' : ''}
+            onClick={() => setView('schedules')}
+          >
+            Schedules
+          </button>
+          <button
+            className={view === 'management' ? 'active' : ''}
+            onClick={() => setView('management')}
+          >
+            Management
+          </button>
+        </div>
+      </nav>
+
+      {view === 'schedules' ? renderSchedulesView() : <Management />}
     </div>
   );
 };
