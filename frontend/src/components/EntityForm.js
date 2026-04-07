@@ -1,9 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import './EntityForm.css';
 
-const EntityForm = ({ entityType, entity, onSave, onCancel, dropdowns }) => {
+const EntityForm = ({ entityType, entity, onSave, onCancel, dropdowns, schoolLevel }) => {
     const [formData, setFormData] = useState({});
     const [errors, setErrors] = useState({});
+
+    // Helper to get available grades based on school level
+    const getGradeOptions = React.useCallback(() => {
+        switch (schoolLevel) {
+            case 1: // Elementary
+                return [1, 2, 3, 4, 5];
+            case 2: // Middle
+                return [6, 7, 8, 9];
+            case 3: // High
+                return [10, 11, 12];
+            case 4: // K12
+                return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+            default:
+                return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        }
+    }, [schoolLevel]);
 
     useEffect(() => {
         if (entity) {
@@ -12,11 +28,11 @@ const EntityForm = ({ entityType, entity, onSave, onCancel, dropdowns }) => {
             // Initial data for new entities
             const initialData = { schoolId: 1 }; // Default schoolId
             if (entityType === 'classes') {
-                initialData.grade = 10;
+                initialData.grade = getGradeOptions()[0];
             }
             setFormData(initialData);
         }
-    }, [entity, entityType]);
+    }, [entity, entityType, schoolLevel, getGradeOptions]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -139,14 +155,17 @@ const EntityForm = ({ entityType, entity, onSave, onCancel, dropdowns }) => {
                         </div>
                         <div className="form-group">
                             <label htmlFor="grade">Grade</label>
-                            <input
-                                type="number"
+                            <select
                                 id="grade"
                                 name="grade"
                                 value={formData.grade || ''}
                                 onChange={handleChange}
                                 className={errors.grade ? 'error' : ''}
-                            />
+                            >
+                                {getGradeOptions().map(g => (
+                                    <option key={g} value={g}>Grade {g}</option>
+                                ))}
+                            </select>
                             {errors.grade && <span className="error-text">{errors.grade}</span>}
                         </div>
                     </>

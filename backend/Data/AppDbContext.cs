@@ -107,7 +107,7 @@ public class AppDbContext : DbContext
     {
         // School
         modelBuilder.Entity<School>().HasData(
-            new School { Id = 1, Name = "Trường THPT Nguyễn Du" }
+            new School { Id = 1, Name = "Trường THPT Nguyễn Du", Level = SchoolLevel.High }
         );
 
         // Departments

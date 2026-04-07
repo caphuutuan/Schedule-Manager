@@ -178,6 +178,11 @@ export const getSchools = async () => {
   return handleResponse(response);
 };
 
+export const getSchool = async (id) => {
+  const response = await fetch(`${BASE_URL}/schools/${id}`);
+  return handleResponse(response);
+};
+
 export const createSchool = async (data) => {
   const response = await fetch(`${BASE_URL}/schools`, {
     method: 'POST',

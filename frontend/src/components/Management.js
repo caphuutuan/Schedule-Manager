@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import * as api from '../services/api';
 import EntityForm from './EntityForm';
+import ScheduleForm from './ScheduleForm';
 import './Management.css';
 
 const entityConfig = {
@@ -8,7 +9,8 @@ const entityConfig = {
     teachers: { label: 'Teachers', api: 'getTeachers', create: 'createTeacher', update: 'updateTeacher', delete: 'deleteTeacher' },
     departments: { label: 'Departments', api: 'getDepartments', create: 'createDepartment', update: 'updateDepartment', delete: 'deleteDepartment' },
     subjects: { label: 'Subjects', api: 'getSubjects', create: 'createSubject', update: 'updateSubject', delete: 'deleteSubject' },
-    schools: { label: 'Schools', api: 'getSchools', create: 'createSchool', update: 'updateSchool', delete: 'deleteSchool' }
+    schools: { label: 'Schools', api: 'getSchools', create: 'createSchool', update: 'updateSchool', delete: 'deleteSchool' },
+    schedules: { label: 'Schedules', api: 'getAllSchedules', create: 'createSchedule', update: 'updateSchedule', delete: 'deleteSchedule' }
 };
 
 const Management = () => {
@@ -17,6 +19,7 @@ const Management = () => {
     const [loading, setLoading] = useState(false);
     const [showForm, setShowForm] = useState(false);
     const [editingEntity, setEditingEntity] = useState(null);
+    const [schoolLevel, setSchoolLevel] = useState(3); // Default to High School (3)
     const [dropdowns, setDropdowns] = useState({
         departments: [],
         schools: []
@@ -25,7 +28,16 @@ const Management = () => {
     const fetchEntities = useCallback(async () => {
         setLoading(true);
         try {
-            const data = await api[entityConfig[activeTab].api](1); // Default schoolId = 1
+            let data;
+            if (activeTab === 'schedules') {
+                // For schedules tab in management, we might want a simple list or special fetch
+                // Adding a placeholder getAllSchedules for now or using getSchedules with default params
+                data = await api.getSchedules({ schoolId: 1 }); 
+            } else if (activeTab === 'schools') {
+                data = await api.getSchools();
+            } else {
+                data = await api[entityConfig[activeTab].api](1); // Default schoolId = 1
+            }
             setEntities(data);
         } catch (error) {
             console.error('Error fetching entities:', error);
@@ -35,21 +47,23 @@ const Management = () => {
         }
     }, [activeTab]);
 
-    const fetchDropdownData = useCallback(async () => {
+    const fetchInitialData = useCallback(async () => {
         try {
-            const [deps] = await Promise.all([
-                api.getDepartments(1)
+            const [deps, schoolInfo] = await Promise.all([
+                api.getDepartments(1),
+                api.getSchool(1)
             ]);
             setDropdowns({ departments: deps });
+            if (schoolInfo) setSchoolLevel(schoolInfo.level);
         } catch (error) {
-            console.error('Error fetching dropdown data:', error);
+            console.error('Error fetching initial data:', error);
         }
     }, []);
 
     useEffect(() => {
         fetchEntities();
-        fetchDropdownData();
-    }, [fetchEntities, fetchDropdownData]);
+        fetchInitialData();
+    }, [fetchEntities, fetchInitialData]);
 
     const handleAdd = () => {
         setEditingEntity(null);
@@ -97,7 +111,16 @@ const Management = () => {
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Name</th>
+                            {activeTab === 'schedules' ? (
+                                <>
+                                    <th>Subject</th>
+                                    <th>Class</th>
+                                    <th>Teacher</th>
+                                    <th>Day/Period</th>
+                                </>
+                            ) : (
+                                <th>Name</th>
+                            )}
                             {activeTab === 'classes' && <th>Grade</th>}
                             {(activeTab === 'teachers' || activeTab === 'subjects') && <th>Department</th>}
                             <th className="actions-header">Actions</th>
@@ -108,7 +131,16 @@ const Management = () => {
                             entities.map((item) => (
                                 <tr key={item.id}>
                                     <td>{item.id}</td>
-                                    <td className="entity-name">{item.name}</td>
+                                    {activeTab === 'schedules' ? (
+                                        <>
+                                            <td>{item.subjectName}</td>
+                                            <td>{item.className}</td>
+                                            <td>{item.teacherName}</td>
+                                            <td>{item.dayOfWeek === 7 ? 'CN' : `T${item.dayOfWeek + 1}`} - P{item.period}</td>
+                                        </>
+                                    ) : (
+                                        <td className="entity-name">{item.name}</td>
+                                    )}
                                     {activeTab === 'classes' && <td>{item.grade}</td>}
                                     {(activeTab === 'teachers' || activeTab === 'subjects') && (
                                         <td>{item.departmentName || item.departmentId}</td>
@@ -158,13 +190,26 @@ const Management = () => {
             </main>
 
             {showForm && (
-                <EntityForm
-                    entityType={activeTab}
-                    entity={editingEntity}
-                    onSave={handleSave}
-                    onCancel={() => setShowForm(false)}
-                    dropdowns={dropdowns}
-                />
+                activeTab === 'schedules' ? (
+                    <ScheduleForm
+                        isOpen={showForm}
+                        onClose={() => setShowForm(false)}
+                        schedule={editingEntity}
+                        onSave={() => {
+                            setShowForm(false);
+                            fetchEntities();
+                        }}
+                    />
+                ) : (
+                    <EntityForm
+                        entityType={activeTab}
+                        entity={editingEntity}
+                        onSave={handleSave}
+                        onCancel={() => setShowForm(false)}
+                        dropdowns={dropdowns}
+                        schoolLevel={schoolLevel}
+                    />
+                )
             )}
         </div>
     );

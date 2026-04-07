@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import * as api from './services/api';
-import ScheduleForm from './components/ScheduleForm';
 import Management from './components/Management';
 
 const App = () => {
@@ -12,9 +11,6 @@ const App = () => {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
   const [error, setError] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingSchedule, setEditingSchedule] = useState(null);
-  const [successMsg, setSuccessMsg] = useState(null);
 
   const schoolId = 1; // Default school ID as per requirements
 
@@ -99,33 +95,6 @@ const App = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this schedule?')) return;
-    try {
-      await api.deleteSchedule(id);
-      setSuccessMsg('Schedule deleted successfully');
-      handleFetchSchedule();
-      setTimeout(() => setSuccessMsg(null), 3000);
-    } catch (err) {
-      setError('Failed to delete: ' + err.message);
-    }
-  };
-
-  const handleEdit = (schedule) => {
-    setEditingSchedule(schedule);
-    setIsModalOpen(true);
-  };
-
-  const handleAdd = () => {
-    setEditingSchedule(null);
-    setIsModalOpen(true);
-  };
-
-  const handleFormSave = () => {
-    setSuccessMsg('Schedule saved successfully');
-    handleFetchSchedule();
-    setTimeout(() => setSuccessMsg(null), 3000);
-  };
 
   const getDayName = (dow) => {
     const days = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ Nhật'];
@@ -146,9 +115,6 @@ const App = () => {
     <div className="container">
       <div className="header-actions">
         <h1>Schedule Manager</h1>
-        <button className="fetch-btn" onClick={handleAdd}>
-          + Add New Schedule
-        </button>
       </div>
 
       <div className="tabs">
@@ -207,7 +173,6 @@ const App = () => {
       </div>
 
       {error && <div className="error-msg">{error}</div>}
-      {successMsg && <div className="success-msg">{successMsg}</div>}
 
       <div className="schedule-list">
         {fetching ? (
@@ -231,14 +196,6 @@ const App = () => {
                   <div className="teacher-tag">
                     {s.teacherName}
                   </div>
-                  <div className="item-actions">
-                    <button className="btn-icon" onClick={() => handleEdit(s)} title="Edit">
-                      ✎
-                    </button>
-                    <button className="btn-icon delete" onClick={() => handleDelete(s.id)} title="Delete">
-                      ✕
-                    </button>
-                  </div>
                 </div>
               </React.Fragment>
             );
@@ -250,12 +207,6 @@ const App = () => {
         )}
       </div>
 
-      <ScheduleForm
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        schedule={editingSchedule}
-        onSave={handleFormSave}
-      />
     </div>
   );
 
