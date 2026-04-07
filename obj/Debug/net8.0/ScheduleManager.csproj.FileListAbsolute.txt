@@ -138,3 +138,4 @@ F:\source\repos\Schedule Manager\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger
 F:\source\repos\Schedule Manager\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 F:\source\repos\Schedule Manager\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
 F:\source\repos\Schedule Manager\obj\Debug\net8.0\ScheduleManager.MvcApplicationPartsAssemblyInfo.cs
+F:\source\repos\Schedule Manager\obj\Debug\net8.0\ScheduleManager.sourcelink.json
