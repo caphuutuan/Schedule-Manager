@@ -207,3 +207,6 @@ export const deleteSchool = async (id) => {
   });
   return handleResponse(response);
 };
+
+
+const API_URL = "https://schedule-manager-zon3.onrender.com";

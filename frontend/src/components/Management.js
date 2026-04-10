@@ -13,13 +13,12 @@ const entityConfig = {
     schedules: { label: 'Schedules', api: 'getAllSchedules', create: 'createSchedule', update: 'updateSchedule', delete: 'deleteSchedule' }
 };
 
-const Management = () => {
+const Management = ({ school }) => {
     const [activeTab, setActiveTab] = useState('classes');
     const [entities, setEntities] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showForm, setShowForm] = useState(false);
     const [editingEntity, setEditingEntity] = useState(null);
-    const [schoolLevel, setSchoolLevel] = useState(3); // Default to High School (3)
     const [dropdowns, setDropdowns] = useState({
         departments: [],
         schools: []
@@ -30,13 +29,11 @@ const Management = () => {
         try {
             let data;
             if (activeTab === 'schedules') {
-                // For schedules tab in management, we might want a simple list or special fetch
-                // Adding a placeholder getAllSchedules for now or using getSchedules with default params
-                data = await api.getSchedules({ schoolId: 1 }); 
+                data = await api.getSchedules({ schoolId: school.id });
             } else if (activeTab === 'schools') {
                 data = await api.getSchools();
             } else {
-                data = await api[entityConfig[activeTab].api](1); // Default schoolId = 1
+                data = await api[entityConfig[activeTab].api](school.id);
             }
             setEntities(data);
         } catch (error) {
@@ -45,20 +42,16 @@ const Management = () => {
         } finally {
             setLoading(false);
         }
-    }, [activeTab]);
+    }, [activeTab, school.id]);
 
     const fetchInitialData = useCallback(async () => {
         try {
-            const [deps, schoolInfo] = await Promise.all([
-                api.getDepartments(1),
-                api.getSchool(1)
-            ]);
+            const deps = await api.getDepartments(school.id);
             setDropdowns({ departments: deps });
-            if (schoolInfo) setSchoolLevel(schoolInfo.level);
         } catch (error) {
             console.error('Error fetching initial data:', error);
         }
-    }, []);
+    }, [school.id]);
 
     useEffect(() => {
         fetchEntities();
@@ -207,7 +200,7 @@ const Management = () => {
                         onSave={handleSave}
                         onCancel={() => setShowForm(false)}
                         dropdowns={dropdowns}
-                        schoolLevel={schoolLevel}
+                        schoolLevel={school.level}
                     />
                 )
             )}

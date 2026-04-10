@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: schedule-api
+    runtime: dotnet
+    buildCommand: dotnet build
+    startCommand: dotnet run

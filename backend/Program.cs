@@ -64,6 +64,7 @@ if (!app.Environment.IsDevelopment())
 
 // Use CORS
 app.UseCors("AllowLocalhost3000");
+app.UseCors("AllowAll");
 
 app.UseAuthorization();
 

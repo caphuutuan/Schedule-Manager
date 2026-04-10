@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import * as api from './services/api';
 import Management from './components/Management';
+import './components/SchoolSelection.css';
 
 const App = () => {
   const [view, setView] = useState('schedules'); // schedules | management
@@ -11,8 +12,40 @@ const App = () => {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedSchool, setSelectedSchool] = useState(null);
+  const [schools, setSchools] = useState([]);
+  const [initLoading, setInitLoading] = useState(true);
 
-  const schoolId = 1; // Default school ID as per requirements
+  // Load selected school from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('selectedSchool');
+    if (saved) {
+      setSelectedSchool(JSON.parse(saved));
+    }
+    const fetchSchoolsList = async () => {
+      try {
+        const data = await api.getSchools();
+        setSchools(data);
+      } catch (err) {
+        console.error('Failed to fetch schools:', err);
+      } finally {
+        setInitLoading(false);
+      }
+    };
+    fetchSchoolsList();
+  }, []);
+
+  const handleSelectSchool = (school) => {
+    setSelectedSchool(school);
+    localStorage.setItem('selectedSchool', JSON.stringify(school));
+  };
+
+  const handleSwitchSchool = () => {
+    setSelectedSchool(null);
+    localStorage.removeItem('selectedSchool');
+  };
+
+  const schoolId = selectedSchool?.id;
 
   // Generate 52 weeks for 2026 (starting from 1st Jan 2026)
   const weeks = useMemo(() => {
@@ -39,7 +72,7 @@ const App = () => {
 
   // Load entities (classes/teachers/departments) when tab changes
   const loadEntities = React.useCallback(async () => {
-    if (view !== 'schedules') return;
+    if (view !== 'schedules' || !schoolId) return;
     setLoading(true);
     setError(null);
     try {
@@ -53,6 +86,7 @@ const App = () => {
       }
       setEntities(data);
       if (data.length > 0) setSelectedId(data[0].id.toString());
+      else setSelectedId('');
     } catch (err) {
       setError(`Failed to load ${selectedType}es: ` + err.message);
     } finally {
@@ -111,10 +145,51 @@ const App = () => {
     return date.toLocaleDateString('vi-VN');
   };
 
+  const renderSchoolSelection = () => (
+    <div className="school-selection-container">
+      <div className="header-actions">
+        <h1>Select Your School</h1>
+        <p style={{ textAlign: 'center', color: 'var(--text-muted)', marginBottom: '20px' }}>
+          Please choose a school to manage schedules and data.
+        </p>
+      </div>
+      
+      {initLoading ? (
+        <div className="no-data"><span className="loader"></span> Loading schools...</div>
+      ) : (
+        <div className="school-grid">
+          {schools.map(school => (
+            <div 
+              key={school.id} 
+              className="school-card" 
+              onClick={() => handleSelectSchool(school)}
+            >
+              <span className={`level-badge level-${school.level}`}>
+                {school.level === 1 ? 'Elementary' : 
+                 school.level === 2 ? 'Middle' : 
+                 school.level === 3 ? 'High' : 'K-12'}
+              </span>
+              <h3>{school.name}</h3>
+              <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
+                Click to enter this school dashboard.
+              </p>
+            </div>
+          ))}
+          {schools.length === 0 && (
+            <div className="no-data">No schools found in the system.</div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
   const renderSchedulesView = () => (
     <div className="container">
       <div className="header-actions">
         <h1>Schedule Manager</h1>
+        <div style={{ textAlign: 'center', color: 'var(--text-muted)', marginTop: '-20px', marginBottom: '20px' }}>
+           {selectedSchool?.name}
+        </div>
       </div>
 
       <div className="tabs">
@@ -212,25 +287,37 @@ const App = () => {
 
   return (
     <div className="app-layout">
-      <nav className="main-nav">
-        <div className="nav-logo">EduSchedule</div>
-        <div className="nav-links">
-          <button
-            className={view === 'schedules' ? 'active' : ''}
-            onClick={() => setView('schedules')}
-          >
-            Schedules
-          </button>
-          <button
-            className={view === 'management' ? 'active' : ''}
-            onClick={() => setView('management')}
-          >
-            Management
-          </button>
-        </div>
-      </nav>
+      {!selectedSchool ? renderSchoolSelection() : (
+        <>
+          <nav className="main-nav">
+            <div className="nav-logo">EduSchedule</div>
+            
+            <div className="nav-school-info">
+              <span>{selectedSchool.name}</span>
+              <button className="switch-school-btn" onClick={handleSwitchSchool}>
+                Switch School
+              </button>
+            </div>
 
-      {view === 'schedules' ? renderSchedulesView() : <Management />}
+            <div className="nav-links">
+              <button
+                className={view === 'schedules' ? 'active' : ''}
+                onClick={() => setView('schedules')}
+              >
+                Schedules
+              </button>
+              <button
+                className={view === 'management' ? 'active' : ''}
+                onClick={() => setView('management')}
+              >
+                Management
+              </button>
+            </div>
+          </nav>
+
+          {view === 'schedules' ? renderSchedulesView() : <Management school={selectedSchool} />}
+        </>
+      )}
     </div>
   );
 };
