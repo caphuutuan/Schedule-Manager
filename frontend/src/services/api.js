@@ -1,4 +1,5 @@
-const BASE_URL = 'http://localhost:5284/api';
+const API_BASE_URL =
+  process.env.REACT_APP_API_BASE_URL?.replace(/\/$/, '') || 'http://localhost:5284/api';
 
 /**
  * Common fetch handler
@@ -19,12 +20,12 @@ async function handleResponse(response) {
 // --- Schedules ---
 export const getSchedules = async (params) => {
   const query = new URLSearchParams(params).toString();
-  const response = await fetch(`${BASE_URL}/schedules?${query}`);
+  const response = await fetch(`${API_BASE_URL}/schedules?${query}`);
   return handleResponse(response);
 };
 
 export const createSchedule = async (data) => {
-  const response = await fetch(`${BASE_URL}/schedules`, {
+  const response = await fetch(`${API_BASE_URL}/schedules`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -33,7 +34,7 @@ export const createSchedule = async (data) => {
 };
 
 export const updateSchedule = async (id, data) => {
-  const response = await fetch(`${BASE_URL}/schedules/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/schedules/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -42,7 +43,7 @@ export const updateSchedule = async (id, data) => {
 };
 
 export const deleteSchedule = async (id) => {
-  const response = await fetch(`${BASE_URL}/schedules/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/schedules/${id}`, {
     method: 'DELETE',
   });
   return handleResponse(response);
@@ -50,12 +51,12 @@ export const deleteSchedule = async (id) => {
 
 // --- Classes ---
 export const getClasses = async (schoolId) => {
-  const response = await fetch(`${BASE_URL}/classes?schoolId=${schoolId}`);
+  const response = await fetch(`${API_BASE_URL}/classes?schoolId=${schoolId}`);
   return handleResponse(response);
 };
 
 export const createClass = async (data) => {
-  const response = await fetch(`${BASE_URL}/classes`, {
+  const response = await fetch(`${API_BASE_URL}/classes`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -64,7 +65,7 @@ export const createClass = async (data) => {
 };
 
 export const updateClass = async (id, data) => {
-  const response = await fetch(`${BASE_URL}/classes/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/classes/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -73,7 +74,7 @@ export const updateClass = async (id, data) => {
 };
 
 export const deleteClass = async (id) => {
-  const response = await fetch(`${BASE_URL}/classes/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/classes/${id}`, {
     method: 'DELETE',
   });
   return handleResponse(response);
@@ -81,12 +82,12 @@ export const deleteClass = async (id) => {
 
 // --- Teachers ---
 export const getTeachers = async (schoolId) => {
-  const response = await fetch(`${BASE_URL}/teachers?schoolId=${schoolId}`);
+  const response = await fetch(`${API_BASE_URL}/teachers?schoolId=${schoolId}`);
   return handleResponse(response);
 };
 
 export const createTeacher = async (data) => {
-  const response = await fetch(`${BASE_URL}/teachers`, {
+  const response = await fetch(`${API_BASE_URL}/teachers`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -95,7 +96,7 @@ export const createTeacher = async (data) => {
 };
 
 export const updateTeacher = async (id, data) => {
-  const response = await fetch(`${BASE_URL}/teachers/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/teachers/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -104,7 +105,7 @@ export const updateTeacher = async (id, data) => {
 };
 
 export const deleteTeacher = async (id) => {
-  const response = await fetch(`${BASE_URL}/teachers/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/teachers/${id}`, {
     method: 'DELETE',
   });
   return handleResponse(response);
@@ -112,12 +113,12 @@ export const deleteTeacher = async (id) => {
 
 // --- Departments ---
 export const getDepartments = async (schoolId) => {
-  const response = await fetch(`${BASE_URL}/departments?schoolId=${schoolId}`);
+  const response = await fetch(`${API_BASE_URL}/departments?schoolId=${schoolId}`);
   return handleResponse(response);
 };
 
 export const createDepartment = async (data) => {
-  const response = await fetch(`${BASE_URL}/departments`, {
+  const response = await fetch(`${API_BASE_URL}/departments`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -126,7 +127,7 @@ export const createDepartment = async (data) => {
 };
 
 export const updateDepartment = async (id, data) => {
-  const response = await fetch(`${BASE_URL}/departments/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/departments/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -135,7 +136,7 @@ export const updateDepartment = async (id, data) => {
 };
 
 export const deleteDepartment = async (id) => {
-  const response = await fetch(`${BASE_URL}/departments/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/departments/${id}`, {
     method: 'DELETE',
   });
   return handleResponse(response);
@@ -143,12 +144,12 @@ export const deleteDepartment = async (id) => {
 
 // --- Subjects ---
 export const getSubjects = async (schoolId) => {
-  const response = await fetch(`${BASE_URL}/subjects?schoolId=${schoolId}`);
+  const response = await fetch(`${API_BASE_URL}/subjects?schoolId=${schoolId}`);
   return handleResponse(response);
 };
 
 export const createSubject = async (data) => {
-  const response = await fetch(`${BASE_URL}/subjects`, {
+  const response = await fetch(`${API_BASE_URL}/subjects`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -157,7 +158,7 @@ export const createSubject = async (data) => {
 };
 
 export const updateSubject = async (id, data) => {
-  const response = await fetch(`${BASE_URL}/subjects/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/subjects/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -166,7 +167,7 @@ export const updateSubject = async (id, data) => {
 };
 
 export const deleteSubject = async (id) => {
-  const response = await fetch(`${BASE_URL}/subjects/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/subjects/${id}`, {
     method: 'DELETE',
   });
   return handleResponse(response);
@@ -174,17 +175,17 @@ export const deleteSubject = async (id) => {
 
 // --- Schools ---
 export const getSchools = async () => {
-  const response = await fetch(`${BASE_URL}/schools`);
+  const response = await fetch(`${API_BASE_URL}/schools`);
   return handleResponse(response);
 };
 
 export const getSchool = async (id) => {
-  const response = await fetch(`${BASE_URL}/schools/${id}`);
+  const response = await fetch(`${API_BASE_URL}/schools/${id}`);
   return handleResponse(response);
 };
 
 export const createSchool = async (data) => {
-  const response = await fetch(`${BASE_URL}/schools`, {
+  const response = await fetch(`${API_BASE_URL}/schools`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -193,7 +194,7 @@ export const createSchool = async (data) => {
 };
 
 export const updateSchool = async (id, data) => {
-  const response = await fetch(`${BASE_URL}/schools/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/schools/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -202,11 +203,8 @@ export const updateSchool = async (id, data) => {
 };
 
 export const deleteSchool = async (id) => {
-  const response = await fetch(`${BASE_URL}/schools/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/schools/${id}`, {
     method: 'DELETE',
   });
   return handleResponse(response);
 };
-
-
-const API_URL = "https://schedule-manager-zon3.onrender.com";

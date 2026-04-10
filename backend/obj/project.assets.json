@@ -4327,7 +4327,7 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\caphu\\.nuget\\packages\\": {},
+    "F:\\source\\repos\\Schedule Manager\\.tmp-nuget": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
@@ -4336,7 +4336,7 @@
       "projectUniqueName": "F:\\source\\repos\\Schedule Manager\\backend\\ScheduleManager.csproj",
       "projectName": "ScheduleManager",
       "projectPath": "F:\\source\\repos\\Schedule Manager\\backend\\ScheduleManager.csproj",
-      "packagesPath": "C:\\Users\\caphu\\.nuget\\packages\\",
+      "packagesPath": "F:\\source\\repos\\Schedule Manager\\.tmp-nuget",
       "outputPath": "F:\\source\\repos\\Schedule Manager\\backend\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
