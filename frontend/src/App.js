@@ -117,7 +117,7 @@ const App = () => {
         fromDate: week.fromDate,
         toDate: week.toDate,
       };
-      const data = await api.getSchedules(params);
+      const data = await api.getSchedules(schoolId, params);
       // Group by DayOfWeek and sort by Period
       const sortedData = [...data].sort((a, b) => (a.dayOfWeek - b.dayOfWeek) || (a.period - b.period));
       setSchedules(sortedData);

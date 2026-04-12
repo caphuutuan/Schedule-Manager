@@ -18,14 +18,14 @@ async function handleResponse(response) {
 }
 
 // --- Schedules ---
-export const getSchedules = async (params) => {
+export const getSchedules = async (schoolId, params) => {
   const query = new URLSearchParams(params).toString();
-  const response = await fetch(`${API_BASE_URL}/schedules?${query}`);
+  const response = await fetch(`${API_BASE_URL}/schools/${schoolId}/schedules?${query}`);
   return handleResponse(response);
 };
 
-export const createSchedule = async (data) => {
-  const response = await fetch(`${API_BASE_URL}/schedules`, {
+export const createSchedule = async (schoolId, data) => {
+  const response = await fetch(`${API_BASE_URL}/schools/${schoolId}/schedules`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -33,8 +33,8 @@ export const createSchedule = async (data) => {
   return handleResponse(response);
 };
 
-export const updateSchedule = async (id, data) => {
-  const response = await fetch(`${API_BASE_URL}/schedules/${id}`, {
+export const updateSchedule = async (schoolId, id, data) => {
+  const response = await fetch(`${API_BASE_URL}/schools/${schoolId}/schedules/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -42,8 +42,8 @@ export const updateSchedule = async (id, data) => {
   return handleResponse(response);
 };
 
-export const deleteSchedule = async (id) => {
-  const response = await fetch(`${API_BASE_URL}/schedules/${id}`, {
+export const deleteSchedule = async (schoolId, id) => {
+  const response = await fetch(`${API_BASE_URL}/schools/${schoolId}/schedules/${id}`, {
     method: 'DELETE',
   });
   return handleResponse(response);
@@ -51,12 +51,12 @@ export const deleteSchedule = async (id) => {
 
 // --- Classes ---
 export const getClasses = async (schoolId) => {
-  const response = await fetch(`${API_BASE_URL}/classes?schoolId=${schoolId}`);
+  const response = await fetch(`${API_BASE_URL}/schools/${schoolId}/classes`);
   return handleResponse(response);
 };
 
-export const createClass = async (data) => {
-  const response = await fetch(`${API_BASE_URL}/classes`, {
+export const createClass = async (schoolId, data) => {
+  const response = await fetch(`${API_BASE_URL}/schools/${schoolId}/classes`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -64,8 +64,8 @@ export const createClass = async (data) => {
   return handleResponse(response);
 };
 
-export const updateClass = async (id, data) => {
-  const response = await fetch(`${API_BASE_URL}/classes/${id}`, {
+export const updateClass = async (schoolId, id, data) => {
+  const response = await fetch(`${API_BASE_URL}/schools/${schoolId}/classes/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -73,8 +73,8 @@ export const updateClass = async (id, data) => {
   return handleResponse(response);
 };
 
-export const deleteClass = async (id) => {
-  const response = await fetch(`${API_BASE_URL}/classes/${id}`, {
+export const deleteClass = async (schoolId, id) => {
+  const response = await fetch(`${API_BASE_URL}/schools/${schoolId}/classes/${id}`, {
     method: 'DELETE',
   });
   return handleResponse(response);
@@ -82,12 +82,12 @@ export const deleteClass = async (id) => {
 
 // --- Teachers ---
 export const getTeachers = async (schoolId) => {
-  const response = await fetch(`${API_BASE_URL}/teachers?schoolId=${schoolId}`);
+  const response = await fetch(`${API_BASE_URL}/schools/${schoolId}/teachers`);
   return handleResponse(response);
 };
 
-export const createTeacher = async (data) => {
-  const response = await fetch(`${API_BASE_URL}/teachers`, {
+export const createTeacher = async (schoolId, data) => {
+  const response = await fetch(`${API_BASE_URL}/schools/${schoolId}/teachers`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -95,8 +95,8 @@ export const createTeacher = async (data) => {
   return handleResponse(response);
 };
 
-export const updateTeacher = async (id, data) => {
-  const response = await fetch(`${API_BASE_URL}/teachers/${id}`, {
+export const updateTeacher = async (schoolId, id, data) => {
+  const response = await fetch(`${API_BASE_URL}/schools/${schoolId}/teachers/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -104,8 +104,8 @@ export const updateTeacher = async (id, data) => {
   return handleResponse(response);
 };
 
-export const deleteTeacher = async (id) => {
-  const response = await fetch(`${API_BASE_URL}/teachers/${id}`, {
+export const deleteTeacher = async (schoolId, id) => {
+  const response = await fetch(`${API_BASE_URL}/schools/${schoolId}/teachers/${id}`, {
     method: 'DELETE',
   });
   return handleResponse(response);
@@ -113,12 +113,12 @@ export const deleteTeacher = async (id) => {
 
 // --- Departments ---
 export const getDepartments = async (schoolId) => {
-  const response = await fetch(`${API_BASE_URL}/departments?schoolId=${schoolId}`);
+  const response = await fetch(`${API_BASE_URL}/schools/${schoolId}/departments`);
   return handleResponse(response);
 };
 
-export const createDepartment = async (data) => {
-  const response = await fetch(`${API_BASE_URL}/departments`, {
+export const createDepartment = async (schoolId, data) => {
+  const response = await fetch(`${API_BASE_URL}/schools/${schoolId}/departments`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -126,8 +126,8 @@ export const createDepartment = async (data) => {
   return handleResponse(response);
 };
 
-export const updateDepartment = async (id, data) => {
-  const response = await fetch(`${API_BASE_URL}/departments/${id}`, {
+export const updateDepartment = async (schoolId, id, data) => {
+  const response = await fetch(`${API_BASE_URL}/schools/${schoolId}/departments/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -135,8 +135,8 @@ export const updateDepartment = async (id, data) => {
   return handleResponse(response);
 };
 
-export const deleteDepartment = async (id) => {
-  const response = await fetch(`${API_BASE_URL}/departments/${id}`, {
+export const deleteDepartment = async (schoolId, id) => {
+  const response = await fetch(`${API_BASE_URL}/schools/${schoolId}/departments/${id}`, {
     method: 'DELETE',
   });
   return handleResponse(response);
@@ -144,12 +144,12 @@ export const deleteDepartment = async (id) => {
 
 // --- Subjects ---
 export const getSubjects = async (schoolId) => {
-  const response = await fetch(`${API_BASE_URL}/subjects?schoolId=${schoolId}`);
+  const response = await fetch(`${API_BASE_URL}/schools/${schoolId}/subjects`);
   return handleResponse(response);
 };
 
-export const createSubject = async (data) => {
-  const response = await fetch(`${API_BASE_URL}/subjects`, {
+export const createSubject = async (schoolId, data) => {
+  const response = await fetch(`${API_BASE_URL}/schools/${schoolId}/subjects`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -157,8 +157,8 @@ export const createSubject = async (data) => {
   return handleResponse(response);
 };
 
-export const updateSubject = async (id, data) => {
-  const response = await fetch(`${API_BASE_URL}/subjects/${id}`, {
+export const updateSubject = async (schoolId, id, data) => {
+  const response = await fetch(`${API_BASE_URL}/schools/${schoolId}/subjects/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -166,8 +166,8 @@ export const updateSubject = async (id, data) => {
   return handleResponse(response);
 };
 
-export const deleteSubject = async (id) => {
-  const response = await fetch(`${API_BASE_URL}/subjects/${id}`, {
+export const deleteSubject = async (schoolId, id) => {
+  const response = await fetch(`${API_BASE_URL}/schools/${schoolId}/subjects/${id}`, {
     method: 'DELETE',
   });
   return handleResponse(response);

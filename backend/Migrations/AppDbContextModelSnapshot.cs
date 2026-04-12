@@ -45,7 +45,7 @@ namespace ScheduleManager.Migrations
 
                     b.HasIndex("SchoolId");
 
-                    b.ToTable("Classes");
+                    b.ToTable("Classes", (string)null);
 
                     b.HasData(
                         new
@@ -91,7 +91,7 @@ namespace ScheduleManager.Migrations
 
                     b.HasIndex("SchoolId");
 
-                    b.ToTable("Departments");
+                    b.ToTable("Departments", (string)null);
 
                     b.HasData(
                         new
@@ -147,7 +147,7 @@ namespace ScheduleManager.Migrations
 
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("Schedules");
+                    b.ToTable("Schedules", (string)null);
 
                     b.HasData(
                         new
@@ -280,7 +280,7 @@ namespace ScheduleManager.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Schools");
+                    b.ToTable("Schools", (string)null);
 
                     b.HasData(
                         new
@@ -316,7 +316,7 @@ namespace ScheduleManager.Migrations
 
                     b.HasIndex("SchoolId");
 
-                    b.ToTable("Subjects");
+                    b.ToTable("Subjects", (string)null);
 
                     b.HasData(
                         new
@@ -388,7 +388,7 @@ namespace ScheduleManager.Migrations
 
                     b.HasIndex("SchoolId");
 
-                    b.ToTable("Teachers");
+                    b.ToTable("Teachers", (string)null);
 
                     b.HasData(
                         new

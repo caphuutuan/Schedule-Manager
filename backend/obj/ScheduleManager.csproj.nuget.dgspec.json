@@ -10,7 +10,7 @@
         "projectUniqueName": "F:\\source\\repos\\Schedule Manager\\backend\\ScheduleManager.csproj",
         "projectName": "ScheduleManager",
         "projectPath": "F:\\source\\repos\\Schedule Manager\\backend\\ScheduleManager.csproj",
-        "packagesPath": "F:\\source\\repos\\Schedule Manager\\.tmp-nuget",
+        "packagesPath": "C:\\Users\\caphu\\.nuget\\packages\\",
         "outputPath": "F:\\source\\repos\\Schedule Manager\\backend\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [

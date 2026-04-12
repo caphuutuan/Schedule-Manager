@@ -29,7 +29,7 @@ const Management = ({ school }) => {
         try {
             let data;
             if (activeTab === 'schedules') {
-                data = await api.getSchedules({ schoolId: school.id });
+                data = await api.getSchedules(school.id, { schoolId: school.id });
             } else if (activeTab === 'schools') {
                 data = await api.getSchools();
             } else {
@@ -71,7 +71,11 @@ const Management = ({ school }) => {
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this item?')) {
             try {
-                await api[entityConfig[activeTab].delete](id);
+                if (activeTab === 'schools') {
+                    await api.deleteSchool(id);
+                } else {
+                    await api[entityConfig[activeTab].delete](school.id, id);
+                }
                 fetchEntities();
             } catch (error) {
                 console.error('Error deleting entity:', error);
@@ -82,10 +86,19 @@ const Management = ({ school }) => {
 
     const handleSave = async (formData) => {
         try {
+            const isSchool = activeTab === 'schools';
             if (editingEntity) {
-                await api[entityConfig[activeTab].update](editingEntity.id, formData);
+                if (isSchool) {
+                    await api.updateSchool(editingEntity.id, formData);
+                } else {
+                    await api[entityConfig[activeTab].update](school.id, editingEntity.id, formData);
+                }
             } else {
-                await api[entityConfig[activeTab].create](formData);
+                if (isSchool) {
+                    await api.createSchool(formData);
+                } else {
+                    await api[entityConfig[activeTab].create](school.id, formData);
+                }
             }
             setShowForm(false);
             fetchEntities();
@@ -188,6 +201,7 @@ const Management = ({ school }) => {
                         isOpen={showForm}
                         onClose={() => setShowForm(false)}
                         schedule={editingEntity}
+                        school={school}
                         onSave={() => {
                             setShowForm(false);
                             fetchEntities();

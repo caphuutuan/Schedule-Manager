@@ -16,16 +16,17 @@ public class ScheduleService : IScheduleService
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<ScheduleResponseDto>> GetSchedulesAsync(ScheduleFilterDto filter)
+    public async Task<IEnumerable<ScheduleResponseDto>> GetSchedulesAsync(int schoolId, ScheduleFilterDto filter)
     {
+        filter.SchoolId = schoolId;
         var schedules = await _repository.GetFilteredSchedulesAsync(filter);
         return _mapper.Map<IEnumerable<ScheduleResponseDto>>(schedules);
     }
 
-    public async Task<ScheduleResponseDto?> GetScheduleByIdAsync(int id)
+    public async Task<ScheduleResponseDto?> GetScheduleByIdAsync(int schoolId, int id)
     {
         var schedule = await _repository.GetByIdAsync(id);
-        if (schedule == null) return null;
+        if (schedule == null || schedule.SchoolId != schoolId) return null;
         
         return _mapper.Map<ScheduleResponseDto>(schedule);
     }
@@ -55,10 +56,11 @@ public class ScheduleService : IScheduleService
         return _mapper.Map<ScheduleResponseDto>(schedule);
     }
 
-    public async Task<ScheduleResponseDto> UpdateScheduleAsync(int id, ScheduleUpdateDto dto)
+    public async Task<ScheduleResponseDto> UpdateScheduleAsync(int schoolId, int id, ScheduleUpdateDto dto)
     {
         var schedule = await _repository.GetByIdAsync(id);
-        if (schedule == null) throw new KeyNotFoundException("Không tìm thấy lịch học.");
+        if (schedule == null || schedule.SchoolId != schoolId) 
+            throw new KeyNotFoundException("Không tìm thấy lịch học trong trường này.");
 
         bool hasConflict = await _repository.HasConflictAsync(id, dto.TeacherId, dto.ClassId, dto.DayOfWeek, dto.Period, dto.Date);
         if (hasConflict)
@@ -79,10 +81,11 @@ public class ScheduleService : IScheduleService
         return _mapper.Map<ScheduleResponseDto>(schedule);
     }
 
-    public async Task DeleteScheduleAsync(int id)
+    public async Task DeleteScheduleAsync(int schoolId, int id)
     {
         var schedule = await _repository.GetByIdAsync(id);
-        if (schedule == null) throw new KeyNotFoundException("Không tìm thấy lịch học.");
+        if (schedule == null || schedule.SchoolId != schoolId) 
+            throw new KeyNotFoundException("Không tìm thấy lịch học trong trường này.");
 
         _repository.Remove(schedule);
         await _repository.SaveChangesAsync();

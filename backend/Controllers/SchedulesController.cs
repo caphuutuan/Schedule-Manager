@@ -5,56 +5,51 @@ using ScheduleManager.Services;
 namespace ScheduleManager.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/schools/{schoolId}/[controller]")]
 public class SchedulesController : ControllerBase
 {
-    private readonly IScheduleService _scheduleService;
+    private readonly IScheduleService _service;
 
-    public SchedulesController(IScheduleService scheduleService)
+    public SchedulesController(IScheduleService service)
     {
-        _scheduleService = scheduleService;
+        _service = service;
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] ScheduleFilterDto filter)
+    public async Task<ActionResult<IEnumerable<ScheduleResponseDto>>> GetList(int schoolId, [FromQuery] ScheduleFilterDto filter)
     {
-        if (filter.SchoolId <= 0)
-        {
-            return BadRequest("SchoolId là bắt buộc.");
-        }
-        var schedules = await _scheduleService.GetSchedulesAsync(filter);
-        return Ok(schedules);
+        return Ok(await _service.GetSchedulesAsync(schoolId, filter));
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<ActionResult<ScheduleResponseDto>> GetById(int schoolId, int id)
     {
-        var schedule = await _scheduleService.GetScheduleByIdAsync(id);
+        var schedule = await _service.GetScheduleByIdAsync(schoolId, id);
         if (schedule == null) return NotFound();
         return Ok(schedule);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(ScheduleCreateDto dto)
+    public async Task<ActionResult<ScheduleResponseDto>> Create(int schoolId, ScheduleCreateDto dto)
     {
         try
         {
-            var result = await _scheduleService.CreateScheduleAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+            dto.SchoolId = schoolId;
+            var created = await _service.CreateScheduleAsync(dto);
+            return CreatedAtAction(nameof(GetById), new { schoolId = schoolId, id = created.Id }, created);
         }
         catch (Exception ex)
         {
-            return BadRequest(new { Error = ex.Message });
+            return BadRequest(ex.Message);
         }
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, ScheduleUpdateDto dto)
+    public async Task<ActionResult<ScheduleResponseDto>> Update(int schoolId, int id, ScheduleUpdateDto dto)
     {
         try
         {
-            var result = await _scheduleService.UpdateScheduleAsync(id, dto);
-            return Ok(result);
+            return Ok(await _service.UpdateScheduleAsync(schoolId, id, dto));
         }
         catch (KeyNotFoundException)
         {
@@ -62,16 +57,16 @@ public class SchedulesController : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest(new { Error = ex.Message });
+            return BadRequest(ex.Message);
         }
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<ActionResult> Delete(int schoolId, int id)
     {
         try
         {
-            await _scheduleService.DeleteScheduleAsync(id);
+            await _service.DeleteScheduleAsync(schoolId, id);
             return NoContent();
         }
         catch (KeyNotFoundException)
