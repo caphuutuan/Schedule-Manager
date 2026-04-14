@@ -15,6 +15,7 @@ const App = () => {
   const [selectedSchool, setSelectedSchool] = useState(null);
   const [schools, setSchools] = useState([]);
   const [initLoading, setInitLoading] = useState(true);
+  const [activeYear, setActiveYear] = useState(null);
 
   // Load selected school from localStorage on mount
   useEffect(() => {
@@ -47,11 +48,32 @@ const App = () => {
 
   const schoolId = selectedSchool?.id;
 
-  // Generate 52 weeks for 2026 (starting from 1st Jan 2026)
+  // Fetch active academic year when school changes
+  useEffect(() => {
+    if (!schoolId) {
+        setActiveYear(null);
+        return;
+    }
+    const fetchYear = async () => {
+      try {
+        const year = await api.getActiveAcademicYear(schoolId);
+        setActiveYear(year);
+      } catch(e) {
+        console.error('Failed to get active academic year:', e);
+      }
+    };
+    fetchYear();
+  }, [schoolId]);
+
+  // Generate weeks dynamically based on the active academic year
   const weeks = useMemo(() => {
+    if (!activeYear) return [];
+
     const weekItems = [];
-    let current = new Date('2026-01-05'); // First Monday of 2026
-    for (let i = 1; i <= 52; i++) {
+    let current = new Date(activeYear.startDate);
+    const total = activeYear.totalWeeks || 35;
+
+    for (let i = 1; i <= total; i++) {
       const start = new Date(current);
       const end = new Date(current);
       end.setDate(end.getDate() + 6);
@@ -66,7 +88,7 @@ const App = () => {
       current.setDate(current.getDate() + 7);
     }
     return weekItems;
-  }, []);
+  }, [activeYear]);
 
   const [selectedWeekIndex, setSelectedWeekIndex] = useState(0);
 
@@ -114,8 +136,7 @@ const App = () => {
         schoolId,
         type: selectedType,
         id: selectedId,
-        fromDate: week.fromDate,
-        toDate: week.toDate,
+        weekNumber: week.id
       };
       const data = await api.getSchedules(schoolId, params);
       // Group by DayOfWeek and sort by Period
@@ -153,21 +174,21 @@ const App = () => {
           Please choose a school to manage schedules and data.
         </p>
       </div>
-      
+
       {initLoading ? (
         <div className="no-data"><span className="loader"></span> Loading schools...</div>
       ) : (
         <div className="school-grid">
           {schools.map(school => (
-            <div 
-              key={school.id} 
-              className="school-card" 
+            <div
+              key={school.id}
+              className="school-card"
               onClick={() => handleSelectSchool(school)}
             >
               <span className={`level-badge level-${school.level}`}>
-                {school.level === 1 ? 'Elementary' : 
-                 school.level === 2 ? 'Middle' : 
-                 school.level === 3 ? 'High' : 'K-12'}
+                {school.level === 1 ? 'Elementary' :
+                  school.level === 2 ? 'Middle' :
+                    school.level === 3 ? 'High' : 'K-12'}
               </span>
               <h3>{school.name}</h3>
               <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
@@ -188,7 +209,7 @@ const App = () => {
       <div className="header-actions">
         <h1>Schedule Manager</h1>
         <div style={{ textAlign: 'center', color: 'var(--text-muted)', marginTop: '-20px', marginBottom: '20px' }}>
-           {selectedSchool?.name}
+          {selectedSchool?.name}
         </div>
       </div>
 
@@ -291,7 +312,7 @@ const App = () => {
         <>
           <nav className="main-nav">
             <div className="nav-logo">EduSchedule</div>
-            
+
             <div className="nav-school-info">
               <span>{selectedSchool.name}</span>
               <button className="switch-school-btn" onClick={handleSwitchSchool}>

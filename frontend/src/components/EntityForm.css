@@ -55,7 +55,7 @@
     font-size: 1rem;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     background-color: var(--glass-bg);
-    color: var(--text);
+    color: var(--text-red);
     outline: none;
 }
 

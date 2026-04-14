@@ -19,6 +19,9 @@ public class ScheduleResponseDto
     public int DayOfWeek { get; set; }
     public int Period { get; set; }
     public DateTime? Date { get; set; }
+    public int WeekNumber { get; set; }
+    public int Semester { get; set; }
+    public int? AcademicYearId { get; set; }
 }
 
 // ─── Create DTO ──────────────────────────────────────────────────────────────
@@ -75,4 +78,6 @@ public class ScheduleFilterDto
 
     /// <summary>End of a date range (inclusive)</summary>
     public DateTime? ToDate { get; set; }
+
+    public int? WeekNumber { get; set; }
 }

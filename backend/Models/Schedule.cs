@@ -20,9 +20,13 @@ public class Schedule
     /// </summary>
     public int Period { get; set; }
 
+    public int WeekNumber { get; set; }
+    public int? AcademicYearId { get; set; }
+
     // Navigation properties
     public School School { get; set; } = null!;
     public Class Class { get; set; } = null!;
     public Teacher Teacher { get; set; } = null!;
     public Subject Subject { get; set; } = null!;
+    public AcademicYear? AcademicYear { get; set; }
 }

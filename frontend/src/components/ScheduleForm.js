@@ -176,7 +176,7 @@ const ScheduleForm = ({ schedule, isOpen, onClose, onSave, school }) => {
               onChange={e => setFormData({...formData, date: e.target.value})}
             />
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-              Leave blank for a recurring weekly schedule.
+              Leave blank for a recurring weekly schedule. If specified, it MUST fall within the active Academic Year.
             </p>
           </div>
 

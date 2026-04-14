@@ -208,3 +208,14 @@ export const deleteSchool = async (id) => {
   });
   return handleResponse(response);
 };
+
+// --- Academic Years ---
+export const getAcademicYears = async (schoolId) => {
+  const response = await fetch(`${API_BASE_URL}/schools/${schoolId}/academic-years`);
+  return handleResponse(response);
+};
+
+export const getActiveAcademicYear = async (schoolId) => {
+  const response = await fetch(`${API_BASE_URL}/schools/${schoolId}/academic-years/active`);
+  return handleResponse(response);
+};

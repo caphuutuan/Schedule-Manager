@@ -13,6 +13,7 @@ public class AppDbContext : DbContext
     public DbSet<Class> Classes => Set<Class>();
     public DbSet<Subject> Subjects => Set<Subject>();
     public DbSet<Schedule> Schedules => Set<Schedule>();
+    public DbSet<AcademicYear> AcademicYears => Set<AcademicYear>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -23,6 +24,17 @@ public class AppDbContext : DbContext
         {
             e.HasKey(x => x.Id);
             e.Property(x => x.Name).IsRequired().HasMaxLength(200);
+        });
+
+        // ─── AcademicYear ────────────────────────────────────────────────
+        modelBuilder.Entity<AcademicYear>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Name).IsRequired().HasMaxLength(100);
+            e.HasOne(x => x.School)
+             .WithMany(s => s.AcademicYears)
+             .HasForeignKey(x => x.SchoolId)
+             .OnDelete(DeleteBehavior.Restrict);
         });
 
         // ─── Department ──────────────────────────────────────────────────
@@ -97,6 +109,10 @@ public class AppDbContext : DbContext
              .WithMany(t => t.Schedules)
              .HasForeignKey(x => x.TeacherId)
              .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.AcademicYear)
+             .WithMany(y => y.Schedules)
+             .HasForeignKey(x => x.AcademicYearId)
+             .OnDelete(DeleteBehavior.Restrict);
         });
 
         // ─── Seed data ───────────────────────────────────────────────────
@@ -108,6 +124,20 @@ public class AppDbContext : DbContext
         // School
         modelBuilder.Entity<School>().HasData(
             new School { Id = 1, Name = "Trường THPT Nguyễn Du", Level = SchoolLevel.High }
+        );
+
+        // Academic Year
+        var academicYearStartDate = new DateTime(2025, 9, 5);
+        modelBuilder.Entity<AcademicYear>().HasData(
+            new AcademicYear 
+            { 
+                Id = 1, 
+                SchoolId = 1, 
+                Name = "2025-2026", 
+                StartDate = academicYearStartDate, 
+                EndDate = new DateTime(2026, 5, 25), 
+                IsActive = true 
+            }
         );
 
         // Departments
@@ -142,24 +172,25 @@ public class AppDbContext : DbContext
             new Subject { Id = 6, Name = "Địa Lý", DepartmentId = 2, SchoolId = 1 }
         );
 
-        // Schedules — Using specific dates for Week 1 (Jan 2026) to demonstrate weekly filtering
-        var w1Mon = new DateTime(2026, 1, 5);
-        var w1Tue = new DateTime(2026, 1, 6);
-        var w1Wed = new DateTime(2026, 1, 7);
-        var w1Thu = new DateTime(2026, 1, 8);
-        var w1Fri = new DateTime(2026, 1, 9);
+        // Schedules — Using dates in 2025 to match the AcademicYear
+        var w1Mon = new DateTime(2025, 9, 8);
+        var w1Tue = new DateTime(2025, 9, 9);
+        var w1Wed = new DateTime(2025, 9, 10);
+        var w1Thu = new DateTime(2025, 9, 11);
+        var w1Fri = new DateTime(2025, 9, 12);
+        var weekNum = ((w1Mon - academicYearStartDate).Days / 7) + 1;
 
         modelBuilder.Entity<Schedule>().HasData(
-            new Schedule { Id = 1,  SchoolId = 1, ClassId = 1, TeacherId = 1, SubjectId = 1, DayOfWeek = 1, Period = 1, Date = w1Mon },
-            new Schedule { Id = 2,  SchoolId = 1, ClassId = 1, TeacherId = 2, SubjectId = 2, DayOfWeek = 1, Period = 2, Date = w1Mon },
-            new Schedule { Id = 3,  SchoolId = 1, ClassId = 2, TeacherId = 3, SubjectId = 3, DayOfWeek = 2, Period = 1, Date = w1Tue },
-            new Schedule { Id = 4,  SchoolId = 1, ClassId = 2, TeacherId = 4, SubjectId = 4, DayOfWeek = 2, Period = 2, Date = w1Tue },
-            new Schedule { Id = 5,  SchoolId = 1, ClassId = 3, TeacherId = 5, SubjectId = 5, DayOfWeek = 3, Period = 1, Date = w1Wed },
-            new Schedule { Id = 6,  SchoolId = 1, ClassId = 1, TeacherId = 1, SubjectId = 1, DayOfWeek = 3, Period = 2, Date = w1Wed },
-            new Schedule { Id = 7,  SchoolId = 1, ClassId = 2, TeacherId = 2, SubjectId = 2, DayOfWeek = 4, Period = 1, Date = w1Thu },
-            new Schedule { Id = 8,  SchoolId = 1, ClassId = 3, TeacherId = 3, SubjectId = 3, DayOfWeek = 4, Period = 2, Date = w1Thu },
-            new Schedule { Id = 9,  SchoolId = 1, ClassId = 1, TeacherId = 4, SubjectId = 4, DayOfWeek = 5, Period = 1, Date = w1Fri },
-            new Schedule { Id = 10, SchoolId = 1, ClassId = 2, TeacherId = 5, SubjectId = 6, DayOfWeek = 5, Period = 2, Date = w1Fri }
+            new Schedule { Id = 1,  SchoolId = 1, AcademicYearId = 1, WeekNumber = weekNum, ClassId = 1, TeacherId = 1, SubjectId = 1, DayOfWeek = 1, Period = 1, Date = w1Mon },
+            new Schedule { Id = 2,  SchoolId = 1, AcademicYearId = 1, WeekNumber = weekNum, ClassId = 1, TeacherId = 2, SubjectId = 2, DayOfWeek = 1, Period = 2, Date = w1Mon },
+            new Schedule { Id = 3,  SchoolId = 1, AcademicYearId = 1, WeekNumber = weekNum, ClassId = 2, TeacherId = 3, SubjectId = 3, DayOfWeek = 2, Period = 1, Date = w1Tue },
+            new Schedule { Id = 4,  SchoolId = 1, AcademicYearId = 1, WeekNumber = weekNum, ClassId = 2, TeacherId = 4, SubjectId = 4, DayOfWeek = 2, Period = 2, Date = w1Tue },
+            new Schedule { Id = 5,  SchoolId = 1, AcademicYearId = 1, WeekNumber = weekNum, ClassId = 3, TeacherId = 5, SubjectId = 5, DayOfWeek = 3, Period = 1, Date = w1Wed },
+            new Schedule { Id = 6,  SchoolId = 1, AcademicYearId = 1, WeekNumber = weekNum, ClassId = 1, TeacherId = 1, SubjectId = 1, DayOfWeek = 3, Period = 2, Date = w1Wed },
+            new Schedule { Id = 7,  SchoolId = 1, AcademicYearId = 1, WeekNumber = weekNum, ClassId = 2, TeacherId = 2, SubjectId = 2, DayOfWeek = 4, Period = 1, Date = w1Thu },
+            new Schedule { Id = 8,  SchoolId = 1, AcademicYearId = 1, WeekNumber = weekNum, ClassId = 3, TeacherId = 3, SubjectId = 3, DayOfWeek = 4, Period = 2, Date = w1Thu },
+            new Schedule { Id = 9,  SchoolId = 1, AcademicYearId = 1, WeekNumber = weekNum, ClassId = 1, TeacherId = 4, SubjectId = 4, DayOfWeek = 5, Period = 1, Date = w1Fri },
+            new Schedule { Id = 10, SchoolId = 1, AcademicYearId = 1, WeekNumber = weekNum, ClassId = 2, TeacherId = 5, SubjectId = 6, DayOfWeek = 5, Period = 2, Date = w1Fri }
         );
     }
 }

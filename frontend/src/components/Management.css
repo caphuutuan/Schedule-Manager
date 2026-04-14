@@ -128,7 +128,8 @@ tr:hover td {
     gap: 0.75rem;
 }
 
-.edit-btn, .delete-btn {
+.edit-btn,
+.delete-btn {
     padding: 0.5rem 1rem;
     border-radius: 8px;
     font-size: 0.8125rem;
@@ -155,7 +156,8 @@ tr:hover td {
     background: rgba(239, 68, 68, 0.1);
 }
 
-.loading, .empty-state {
+.loading,
+.empty-state {
     padding: 5rem;
     text-align: center;
     color: var(--text-muted);
@@ -164,6 +166,204 @@ tr:hover td {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ─── Filter Bar ─────────────────────────────────────────────────────────── */
+.filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.filter-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.filter-select {
+    background: var(--glass-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-red);
+    padding: 0.4rem 0.75rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    min-width: 150px;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.filter-input {
+    background: var(--glass-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 0.4rem 0.75rem;
+    font-size: 0.875rem;
+    transition: border-color 0.2s;
+    min-width: 200px;
+    flex: 1;
+}
+
+.filter-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.filter-count {
+    margin-left: auto;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    background: rgba(99, 102, 241, 0.1);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    white-space: nowrap;
+}
+
+.filter-search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 180px;
+}
+
+.filter-search-icon {
+    position: absolute;
+    left: 0.6rem;
+    font-size: 0.85rem;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.filter-search-wrap .filter-input {
+    padding-left: 2rem;
+    padding-right: 2rem;
+    width: 100%;
+    min-width: unset;
+}
+
+.filter-clear-btn {
+    position: absolute;
+    right: 0.5rem;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.9rem;
+    line-height: 1;
+    padding: 0 0.2rem;
+    transition: color 0.15s;
+}
+
+.filter-clear-btn:hover {
+    color: var(--text);
+}
+
+.filter-divider {
+    display: block;
+    width: 1px;
+    height: 1.5rem;
+    background: var(--border);
+    flex-shrink: 0;
+}
+
+/* ─── Sortable Headers ───────────────────────────────────────────────────── */
+.sortable-th {
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s;
+}
+
+.sortable-th:hover {
+    color: var(--text);
+}
+
+.th-content {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.sort-icon {
+    font-size: 0.75rem;
+    transition: all 0.2s;
+}
+
+.sort-icon.neutral {
+    opacity: 0.3;
+}
+
+.sort-icon.active {
+    color: var(--primary);
+    opacity: 1;
+}
+
+/* ─── Badges ─────────────────────────────────────────────────────────────── */
+.grade-badge {
+    display: inline-block;
+    padding: 0.2rem 0.65rem;
+    border-radius: 20px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--primary);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+}
+
+.period-pill {
+    display: inline-block;
+    padding: 0.2rem 0.65rem;
+    border-radius: 20px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.day-badge {
+    display: inline-block;
+    padding: 0.2rem 0.65rem;
+    border-radius: 8px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.id-cell {
+    color: var(--text-muted);
+    font-size: 0.8125rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.dept-cell {
+    font-size: 0.875rem;
+    color: var(--text-muted);
 }

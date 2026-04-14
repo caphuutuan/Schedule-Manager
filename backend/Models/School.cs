@@ -20,4 +20,5 @@ public class School
     public ICollection<Teacher> Teachers { get; set; } = new List<Teacher>();
     public ICollection<Class> Classes { get; set; } = new List<Class>();
     public ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();
+    public ICollection<AcademicYear> AcademicYears { get; set; } = new List<AcademicYear>();
 }
