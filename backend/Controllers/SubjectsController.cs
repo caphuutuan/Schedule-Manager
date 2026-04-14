@@ -5,7 +5,7 @@ using ScheduleManager.Services;
 namespace ScheduleManager.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/schools/{schoolId}/[controller]")]
 public class SubjectsController : ControllerBase
 {
     private readonly ISubjectService _service;
@@ -16,33 +16,33 @@ public class SubjectsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<SubjectResponseDto>>> Get([FromQuery] int schoolId)
+    public async Task<ActionResult<IEnumerable<SubjectResponseDto>>> Get(int schoolId)
     {
-        if (schoolId <= 0) return BadRequest("SchoolId is required");
         return Ok(await _service.GetSubjectsAsync(schoolId));
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<SubjectResponseDto>> GetById(int id)
+    public async Task<ActionResult<SubjectResponseDto>> GetById(int schoolId, int id)
     {
-        var subject = await _service.GetSubjectByIdAsync(id);
+        var subject = await _service.GetSubjectByIdAsync(schoolId, id);
         if (subject == null) return NotFound();
         return Ok(subject);
     }
 
     [HttpPost]
-    public async Task<ActionResult<SubjectResponseDto>> Create(SubjectCreateDto dto)
+    public async Task<ActionResult<SubjectResponseDto>> Create(int schoolId, SubjectCreateDto dto)
     {
+        dto.SchoolId = schoolId;
         var created = await _service.CreateSubjectAsync(dto);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        return CreatedAtAction(nameof(GetById), new { schoolId = schoolId, id = created.Id }, created);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<SubjectResponseDto>> Update(int id, SubjectUpdateDto dto)
+    public async Task<ActionResult<SubjectResponseDto>> Update(int schoolId, int id, SubjectUpdateDto dto)
     {
         try
         {
-            return Ok(await _service.UpdateSubjectAsync(id, dto));
+            return Ok(await _service.UpdateSubjectAsync(schoolId, id, dto));
         }
         catch (KeyNotFoundException)
         {
@@ -51,9 +51,9 @@ public class SubjectsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> Delete(int id)
+    public async Task<ActionResult> Delete(int schoolId, int id)
     {
-        var success = await _service.DeleteSubjectAsync(id);
+        var success = await _service.DeleteSubjectAsync(schoolId, id);
         if (!success) return NotFound();
         return NoContent();
     }

@@ -22,6 +22,49 @@ namespace ScheduleManager.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("ScheduleManager.Models.AcademicYear", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("SchoolId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SchoolId");
+
+                    b.ToTable("AcademicYears");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            EndDate = new DateTime(2026, 5, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsActive = true,
+                            Name = "2025-2026",
+                            SchoolId = 1,
+                            StartDate = new DateTime(2025, 9, 5, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
+                });
+
             modelBuilder.Entity("ScheduleManager.Models.Class", b =>
                 {
                     b.Property<int>("Id")
@@ -116,6 +159,9 @@ namespace ScheduleManager.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("AcademicYearId")
+                        .HasColumnType("int");
+
                     b.Property<int>("ClassId")
                         .HasColumnType("int");
 
@@ -137,7 +183,12 @@ namespace ScheduleManager.Migrations
                     b.Property<int>("TeacherId")
                         .HasColumnType("int");
 
+                    b.Property<int>("WeekNumber")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("AcademicYearId");
 
                     b.HasIndex("ClassId");
 
@@ -153,112 +204,132 @@ namespace ScheduleManager.Migrations
                         new
                         {
                             Id = 1,
+                            AcademicYearId = 1,
                             ClassId = 1,
-                            Date = new DateTime(2026, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateTime(2025, 9, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DayOfWeek = 1,
                             Period = 1,
                             SchoolId = 1,
                             SubjectId = 1,
-                            TeacherId = 1
+                            TeacherId = 1,
+                            WeekNumber = 1
                         },
                         new
                         {
                             Id = 2,
+                            AcademicYearId = 1,
                             ClassId = 1,
-                            Date = new DateTime(2026, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateTime(2025, 9, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DayOfWeek = 1,
                             Period = 2,
                             SchoolId = 1,
                             SubjectId = 2,
-                            TeacherId = 2
+                            TeacherId = 2,
+                            WeekNumber = 1
                         },
                         new
                         {
                             Id = 3,
+                            AcademicYearId = 1,
                             ClassId = 2,
-                            Date = new DateTime(2026, 1, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateTime(2025, 9, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DayOfWeek = 2,
                             Period = 1,
                             SchoolId = 1,
                             SubjectId = 3,
-                            TeacherId = 3
+                            TeacherId = 3,
+                            WeekNumber = 1
                         },
                         new
                         {
                             Id = 4,
+                            AcademicYearId = 1,
                             ClassId = 2,
-                            Date = new DateTime(2026, 1, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateTime(2025, 9, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DayOfWeek = 2,
                             Period = 2,
                             SchoolId = 1,
                             SubjectId = 4,
-                            TeacherId = 4
+                            TeacherId = 4,
+                            WeekNumber = 1
                         },
                         new
                         {
                             Id = 5,
+                            AcademicYearId = 1,
                             ClassId = 3,
-                            Date = new DateTime(2026, 1, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateTime(2025, 9, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DayOfWeek = 3,
                             Period = 1,
                             SchoolId = 1,
                             SubjectId = 5,
-                            TeacherId = 5
+                            TeacherId = 5,
+                            WeekNumber = 1
                         },
                         new
                         {
                             Id = 6,
+                            AcademicYearId = 1,
                             ClassId = 1,
-                            Date = new DateTime(2026, 1, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateTime(2025, 9, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DayOfWeek = 3,
                             Period = 2,
                             SchoolId = 1,
                             SubjectId = 1,
-                            TeacherId = 1
+                            TeacherId = 1,
+                            WeekNumber = 1
                         },
                         new
                         {
                             Id = 7,
+                            AcademicYearId = 1,
                             ClassId = 2,
-                            Date = new DateTime(2026, 1, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateTime(2025, 9, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DayOfWeek = 4,
                             Period = 1,
                             SchoolId = 1,
                             SubjectId = 2,
-                            TeacherId = 2
+                            TeacherId = 2,
+                            WeekNumber = 1
                         },
                         new
                         {
                             Id = 8,
+                            AcademicYearId = 1,
                             ClassId = 3,
-                            Date = new DateTime(2026, 1, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateTime(2025, 9, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DayOfWeek = 4,
                             Period = 2,
                             SchoolId = 1,
                             SubjectId = 3,
-                            TeacherId = 3
+                            TeacherId = 3,
+                            WeekNumber = 1
                         },
                         new
                         {
                             Id = 9,
+                            AcademicYearId = 1,
                             ClassId = 1,
-                            Date = new DateTime(2026, 1, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateTime(2025, 9, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DayOfWeek = 5,
                             Period = 1,
                             SchoolId = 1,
                             SubjectId = 4,
-                            TeacherId = 4
+                            TeacherId = 4,
+                            WeekNumber = 1
                         },
                         new
                         {
                             Id = 10,
+                            AcademicYearId = 1,
                             ClassId = 2,
-                            Date = new DateTime(2026, 1, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Date = new DateTime(2025, 9, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DayOfWeek = 5,
                             Period = 2,
                             SchoolId = 1,
                             SubjectId = 6,
-                            TeacherId = 5
+                            TeacherId = 5,
+                            WeekNumber = 1
                         });
                 });
 
@@ -428,6 +499,17 @@ namespace ScheduleManager.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ScheduleManager.Models.AcademicYear", b =>
+                {
+                    b.HasOne("ScheduleManager.Models.School", "School")
+                        .WithMany("AcademicYears")
+                        .HasForeignKey("SchoolId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("School");
+                });
+
             modelBuilder.Entity("ScheduleManager.Models.Class", b =>
                 {
                     b.HasOne("ScheduleManager.Models.School", "School")
@@ -452,6 +534,11 @@ namespace ScheduleManager.Migrations
 
             modelBuilder.Entity("ScheduleManager.Models.Schedule", b =>
                 {
+                    b.HasOne("ScheduleManager.Models.AcademicYear", "AcademicYear")
+                        .WithMany("Schedules")
+                        .HasForeignKey("AcademicYearId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("ScheduleManager.Models.Class", "Class")
                         .WithMany("Schedules")
                         .HasForeignKey("ClassId")
@@ -475,6 +562,8 @@ namespace ScheduleManager.Migrations
                         .HasForeignKey("TeacherId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("AcademicYear");
 
                     b.Navigation("Class");
 
@@ -523,6 +612,11 @@ namespace ScheduleManager.Migrations
                     b.Navigation("School");
                 });
 
+            modelBuilder.Entity("ScheduleManager.Models.AcademicYear", b =>
+                {
+                    b.Navigation("Schedules");
+                });
+
             modelBuilder.Entity("ScheduleManager.Models.Class", b =>
                 {
                     b.Navigation("Schedules");
@@ -537,6 +631,8 @@ namespace ScheduleManager.Migrations
 
             modelBuilder.Entity("ScheduleManager.Models.School", b =>
                 {
+                    b.Navigation("AcademicYears");
+
                     b.Navigation("Classes");
 
                     b.Navigation("Departments");

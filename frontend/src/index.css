@@ -6,6 +6,7 @@
   --bg: #0f172a;
   --card-bg: rgba(30, 41, 59, 0.7);
   --text: #f8fafc;
+  --text-red: #e80b1d;
   --text-muted: #94a3b8;
   --border: rgba(255, 255, 255, 0.1);
   --glass-bg: rgba(255, 255, 255, 0.03);
@@ -26,6 +27,8 @@
   top: 0;
   z-index: 1000;
   width: 100%;
+  margin-bottom: 30px;
+  border-radius: 8px;
 }
 
 .nav-logo {
@@ -94,7 +97,7 @@ body {
 
 #root {
   width: 100%;
-  max-width: 900px;
+  /* max-width: 900px; */
 }
 
 .container {

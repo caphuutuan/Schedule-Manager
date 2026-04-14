@@ -8,11 +8,16 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
+        // ─── AcademicYear ────────────────────────────────────────────────
+        CreateMap<AcademicYear, AcademicYearResponseDto>();
+        // Note: TotalWeeks is manually computed in the service.
+
         // ─── Schedule ────────────────────────────────────────────────────
         CreateMap<Schedule, ScheduleResponseDto>()
             .ForMember(dest => dest.ClassName,    opt => opt.MapFrom(src => src.Class.Name))
             .ForMember(dest => dest.TeacherName,  opt => opt.MapFrom(src => src.Teacher.Name))
-            .ForMember(dest => dest.SubjectName,  opt => opt.MapFrom(src => src.Subject.Name));
+            .ForMember(dest => dest.SubjectName,  opt => opt.MapFrom(src => src.Subject.Name))
+            .ForMember(dest => dest.Semester,     opt => opt.MapFrom(src => src.WeekNumber <= 18 ? 1 : 2));
 
         // ─── Subject ─────────────────────────────────────────────────────
         CreateMap<Subject, SubjectResponseDto>()

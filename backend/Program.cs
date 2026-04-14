@@ -4,6 +4,22 @@ using ScheduleManager.Repositories;
 using ScheduleManager.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+var productionConnectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+    ?? ["http://localhost:3000", "https://caphuutuan.github.io"];
+var runMigrationsOnStartup = builder.Configuration.GetValue<bool>("Database:RunMigrationsOnStartup");
+
+if (builder.Environment.IsProduction() && string.IsNullOrWhiteSpace(productionConnectionString))
+{
+    throw new InvalidOperationException(
+        "Missing required environment variable 'ConnectionStrings__DefaultConnection' for production.");
+}
+
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException("Connection string 'DefaultConnection' is not configured.");
+}
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -12,13 +28,13 @@ builder.Services.AddSwaggerGen();
 
 // Configure SQL Server Database
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(connectionString));
 
 // Configure CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowLocalhost3000",
-        policy => policy.WithOrigins("http://localhost:3000")
+    options.AddPolicy("Frontend",
+        policy => policy.WithOrigins(allowedOrigins)
                         .AllowAnyMethod()
                         .AllowAnyHeader());
 });
@@ -40,14 +56,18 @@ builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<ISchoolRepository, SchoolRepository>();
 builder.Services.AddScoped<ISchoolService, SchoolService>();
+builder.Services.AddScoped<IAcademicYearRepository, AcademicYearRepository>();
+builder.Services.AddScoped<IAcademicYearService, AcademicYearService>();
 
 var app = builder.Build();
 
-// Seed Database
-using (var scope = app.Services.CreateScope())
+if (runMigrationsOnStartup)
 {
+    using var scope = app.Services.CreateScope();
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    context.Database.Migrate(); 
+
+    app.Logger.LogInformation("Applying database migrations on startup.");
+    context.Database.Migrate();
 }
 
 // Configure the HTTP request pipeline.
@@ -63,11 +83,11 @@ if (!app.Environment.IsDevelopment())
 }
 
 // Use CORS
-app.UseCors("AllowLocalhost3000");
-app.UseCors("AllowAll");
+app.UseCors("Frontend");
 
 app.UseAuthorization();
 
+app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 app.MapControllers();
 
 app.Run();

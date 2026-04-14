@@ -21,10 +21,10 @@ public class SubjectService : ISubjectService
         return _mapper.Map<IEnumerable<SubjectResponseDto>>(subjects);
     }
 
-    public async Task<SubjectResponseDto?> GetSubjectByIdAsync(int id)
+    public async Task<SubjectResponseDto?> GetSubjectByIdAsync(int schoolId, int id)
     {
         var subject = await _repository.GetByIdAsync(id);
-        if (subject == null) return null;
+        if (subject == null || subject.SchoolId != schoolId) return null;
         return _mapper.Map<SubjectResponseDto>(subject);
     }
 
@@ -36,22 +36,22 @@ public class SubjectService : ISubjectService
         return _mapper.Map<SubjectResponseDto>(subject);
     }
 
-    public async Task<SubjectResponseDto> UpdateSubjectAsync(int id, SubjectUpdateDto dto)
+    public async Task<SubjectResponseDto> UpdateSubjectAsync(int schoolId, int id, SubjectUpdateDto dto)
     {
         var subject = await _repository.GetByIdAsync(id);
-        if (subject == null) throw new KeyNotFoundException("Không tìm thấy môn học");
+        if (subject == null || subject.SchoolId != schoolId) 
+            throw new KeyNotFoundException("Không tìm thấy môn học trong trường này");
 
         _mapper.Map(dto, subject);
         _repository.Update(subject);
         await _repository.SaveChangesAsync();
-        
         return _mapper.Map<SubjectResponseDto>(subject);
     }
 
-    public async Task<bool> DeleteSubjectAsync(int id)
+    public async Task<bool> DeleteSubjectAsync(int schoolId, int id)
     {
         var subject = await _repository.GetByIdAsync(id);
-        if (subject == null) return false;
+        if (subject == null || subject.SchoolId != schoolId) return false;
 
         _repository.Remove(subject);
         await _repository.SaveChangesAsync();

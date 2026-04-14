@@ -21,10 +21,10 @@ public class ClassService : IClassService
         return _mapper.Map<IEnumerable<ClassResponseDto>>(classes);
     }
 
-    public async Task<ClassResponseDto?> GetClassByIdAsync(int id)
+    public async Task<ClassResponseDto?> GetClassByIdAsync(int schoolId, int id)
     {
         var @class = await _repository.GetByIdAsync(id);
-        if (@class == null) return null;
+        if (@class == null || @class.SchoolId != schoolId) return null;
         return _mapper.Map<ClassResponseDto>(@class);
     }
 
@@ -36,10 +36,11 @@ public class ClassService : IClassService
         return _mapper.Map<ClassResponseDto>(@class);
     }
 
-    public async Task<ClassResponseDto> UpdateClassAsync(int id, ClassUpdateDto dto)
+    public async Task<ClassResponseDto> UpdateClassAsync(int schoolId, int id, ClassUpdateDto dto)
     {
         var @class = await _repository.GetByIdAsync(id);
-        if (@class == null) throw new KeyNotFoundException("Không tìm thấy lớp học");
+        if (@class == null || @class.SchoolId != schoolId) 
+            throw new KeyNotFoundException("Không tìm thấy lớp học trong trường này");
 
         _mapper.Map(dto, @class);
         _repository.Update(@class);
@@ -47,10 +48,10 @@ public class ClassService : IClassService
         return _mapper.Map<ClassResponseDto>(@class);
     }
 
-    public async Task<bool> DeleteClassAsync(int id)
+    public async Task<bool> DeleteClassAsync(int schoolId, int id)
     {
         var @class = await _repository.GetByIdAsync(id);
-        if (@class == null) return false;
+        if (@class == null || @class.SchoolId != schoolId) return false;
 
         _repository.Remove(@class);
         await _repository.SaveChangesAsync();

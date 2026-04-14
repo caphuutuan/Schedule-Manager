@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import * as api from '../services/api';
 
-const ScheduleForm = ({ schedule, isOpen, onClose, onSave, schools }) => {
+const ScheduleForm = ({ schedule, isOpen, onClose, onSave, school }) => {
   const [formData, setFormData] = useState({
-    schoolId: 1,
+    schoolId: school?.id || 1,
     classId: '',
     teacherId: '',
     subjectId: '',
@@ -21,9 +21,9 @@ const ScheduleForm = ({ schedule, isOpen, onClose, onSave, schools }) => {
     setLoading(true);
     try {
       const [classList, teacherList, subjectList] = await Promise.all([
-        api.getClasses(1),
-        api.getTeachers(1),
-        api.getSubjects(1)
+        api.getClasses(school.id),
+        api.getTeachers(school.id),
+        api.getSubjects(school.id)
       ]);
       setClasses(classList);
       setTeachers(teacherList);
@@ -55,7 +55,7 @@ const ScheduleForm = ({ schedule, isOpen, onClose, onSave, schools }) => {
         });
       } else {
         setFormData({
-          schoolId: 1,
+          schoolId: school.id,
           classId: '',
           teacherId: '',
           subjectId: '',
@@ -84,9 +84,9 @@ const ScheduleForm = ({ schedule, isOpen, onClose, onSave, schools }) => {
       };
 
       if (schedule?.id) {
-        await api.updateSchedule(schedule.id, dto);
+        await api.updateSchedule(school.id, schedule.id, dto);
       } else {
-        await api.createSchedule(dto);
+        await api.createSchedule(school.id, dto);
       }
       onSave();
       onClose();
@@ -176,7 +176,7 @@ const ScheduleForm = ({ schedule, isOpen, onClose, onSave, schools }) => {
               onChange={e => setFormData({...formData, date: e.target.value})}
             />
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-              Leave blank for a recurring weekly schedule.
+              Leave blank for a recurring weekly schedule. If specified, it MUST fall within the active Academic Year.
             </p>
           </div>
 

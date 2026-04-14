@@ -40,31 +40,19 @@ public class ScheduleRepository : GenericRepository<Schedule>, IScheduleReposito
             }
         }
 
-        // 3. Date filtering (Check for specific date OR recurring day)
+        // 3. WeekNumber filtering
+        if (filter.WeekNumber.HasValue)
+        {
+            query = query.Where(s => s.WeekNumber == filter.WeekNumber.Value || s.WeekNumber == 0);
+        }
+
+        // 4. DayOfWeek filtering 
+        // If they provided a specific Date but still want to filter, we already converted it to WeekNumber above.
+        // We can additionally filter by DayOfWeek if we want to isolate a specific day of that week:
         if (filter.Date.HasValue)
         {
             int dow = GetMappingDayOfWeek(filter.Date.Value);
-            var targetDate = filter.Date.Value.Date;
-            query = query.Where(s => 
-                (s.Date.HasValue && s.Date.Value.Date == targetDate) || 
-                (!s.Date.HasValue && s.DayOfWeek == dow)
-            );
-        }
-        else if (filter.FromDate.HasValue && filter.ToDate.HasValue)
-        {
-            DateTime start = filter.FromDate.Value.Date;
-            DateTime end = filter.ToDate.Value.Date;
-            
-            var allowedDows = new List<int>();
-            for(var date = start; date <= end; date = date.AddDays(1))
-            {
-                allowedDows.Add(GetMappingDayOfWeek(date));
-            }
-
-            query = query.Where(s => 
-                (s.Date.HasValue && s.Date.Value.Date >= start && s.Date.Value.Date <= end) ||
-                (!s.Date.HasValue && allowedDows.Contains(s.DayOfWeek))
-            );
+            query = query.Where(s => s.DayOfWeek == dow);
         }
 
         return await query.ToListAsync();
